@@ -1,0 +1,125 @@
+/* Scoped globals for the ported Tact Studio prototype — everything that
+   was originally on :root / body / #root / bare tag selectors in the
+   standalone app now lives under .tact-studio so it can't leak into the
+   rest of the TACT marketing site (same SPA document, so a real :root or
+   body rule here would apply everywhere, not just this route). */
+.tact-studio {
+  /* Brand palette: near-white base (was near-black), single acid-lime
+     point color unchanged. Every panel/text/border token below is
+     consumed by the component CSS files as a var, not a hardcoded hex —
+     flipping the block is enough to relight the whole prototype without
+     touching each component's glass styling. */
+  --bg: #fafafa;
+  --text: #2b2b2b;
+  --text-dim: #7a7a7a;
+  --text-bright: #111111;
+
+  --glass-blur: 22px;
+  --bg-panel: rgba(255, 255, 255, 0.55);
+  --bg-raised: rgba(0, 0, 0, 0.04);
+  --border: rgba(0, 0, 0, 0.12);
+  --glass-highlight: rgba(255, 255, 255, 0.6);
+  --shadow-glass: 0 20px 50px -18px rgba(0, 0, 0, 0.18);
+
+  --accent: #b4ff3c;
+  --accent-left: var(--accent);
+  --accent-right: var(--accent);
+  --accent-glow: rgba(180, 255, 60, 0.28);
+  --accent-glow-right: var(--accent-glow);
+  --accent-secondary: #7c5cff;
+
+  --accent-warn: #ffcc4d;
+  --accent-danger: #ff4d6a;
+
+  --led-ok: var(--accent);
+  --led-ok-glow: var(--accent-glow);
+
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+  --sans: 'Space Grotesk', system-ui, 'Segoe UI', Roboto, sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, 'Cascadia Code', Consolas, monospace;
+
+  position: relative;
+  isolation: isolate;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  font: 15px/1.5 var(--sans);
+  color-scheme: light;
+  color: var(--text);
+  background:
+    radial-gradient(640px 520px at 12% 15%, rgba(180, 255, 60, 0.1) 0%, transparent 70%),
+    radial-gradient(720px 620px at 88% 85%, rgba(124, 92, 255, 0.08) 0%, transparent 70%),
+    var(--bg);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+.tact-studio * {
+  box-sizing: border-box;
+}
+
+/* Ambient glow orbs the glass panels refract. */
+.tact-studio::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(420px 420px at 78% 22%, rgba(180, 255, 60, 0.08) 0%, transparent 70%),
+    radial-gradient(380px 380px at 22% 78%, rgba(124, 92, 255, 0.07) 0%, transparent 70%);
+}
+
+/* A near-invisible brushed-metal grain. */
+.tact-studio::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: repeating-linear-gradient(115deg, #fff 0px, transparent 1px, transparent 2px);
+}
+
+.tact-studio h1,
+.tact-studio h2,
+.tact-studio h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--text-bright);
+  margin: 0;
+}
+
+.tact-studio p {
+  margin: 0;
+}
+
+.tact-studio button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.tact-studio button:focus-visible,
+.tact-studio input:focus-visible,
+.tact-studio [tabindex]:focus-visible {
+  outline: 2px solid var(--accent-left);
+  outline-offset: 2px;
+}
+
+.tact-studio ::selection {
+  background: var(--accent-glow);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tact-studio *,
+  .tact-studio *::before,
+  .tact-studio *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

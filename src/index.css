@@ -1,0 +1,275 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Archivo Black", "Space Grotesk", sans-serif;
+  --font-sans: "Space Grotesk", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-script: "Instrument Serif", serif;
+  /* The main slogan headline ("Style Your Sound") — Archivo Black (the
+     site's usual display face) reads too heavy/blocky for that line, so it
+     gets its own token instead of overriding --font-display sitewide. */
+  --font-slogan: "Syne", "Space Grotesk", sans-serif;
+  /* Space Grotesk/Archivo Black don't cover Hangul — Korean copy (the
+     slogan section's body paragraph, lookbook hover captions) needs an
+     explicit Korean-native face rather than silently falling back to
+     whatever system font the browser picks. */
+  --font-kr: "Noto Sans KR", "Space Grotesk", sans-serif;
+
+  /* Light industrial base. `void` and `bone` keep their original roles —
+     void is hard ink (borders/shadows/text-on-neon), bone is the default
+     body-text color — they've just swapped from a dark-bg pairing to a
+     light one. `paper`/`paper-2` are the two page backgrounds (new;
+     previously that job fell to void/gunmetal, which is why those two
+     used to be near-black). steel/steel-2/chrome-light have all been
+     re-tuned from "light accents on black" to "visible-but-quiet marks
+     on white". */
+  --color-paper: #fafafa;
+  --color-paper-2: #f0efea;
+  --color-void: #0a0a0b;
+  --color-gunmetal: #f0efea;
+  --color-steel: #e7e6e1;
+  --color-steel-2: #d9d8d2;
+  --color-concrete: #55585f;
+  --color-chrome: #b9bdc4;
+  --color-chrome-light: #8a8d94;
+  --color-bone: #16161a;
+
+  /* neon green pop */
+  --color-acid: #ccff00;
+  --color-acid-2: #9fef2f;
+  --color-acid-dim: #6f8f1a;
+
+  /* utility reds for kitsch tags */
+  --color-hazard: #ff3b30;
+
+  --shadow-neon: 0 0 0 1px rgba(204, 255, 0, 0.4), 0 0 24px rgba(204, 255, 0, 0.25);
+  --shadow-hard: 6px 6px 0 0 var(--color-void);
+}
+
+@keyframes spin-around {
+  0% {
+    transform: translateZ(0) rotate(0);
+  }
+  15%, 35% {
+    transform: translateZ(0) rotate(90deg);
+  }
+  65%, 85% {
+    transform: translateZ(0) rotate(270deg);
+  }
+  100% {
+    transform: translateZ(0) rotate(360deg);
+  }
+}
+
+@keyframes shimmer-slide {
+  to {
+    transform: translate(calc(100cqw - 100%), 0);
+  }
+}
+
+@layer utilities {
+  /* ShimmerButton's --speed is a per-instance runtime variable (set inline
+     per button), not a static design token — so unlike the rest of this
+     file it can't go through @theme's --animate-* auto-utility (that
+     hoists to :root, where --speed doesn't exist, which poisons the
+     inherited value for every instance). Writing the utility classes
+     directly keeps `var(--speed)` resolving against whichever button
+     actually rendered it. */
+  .animate-shimmer-slide {
+    animation: shimmer-slide var(--speed) ease-in-out infinite alternate;
+  }
+  .animate-spin-around {
+    animation: spin-around calc(var(--speed) * 2) infinite linear;
+  }
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    background: var(--color-paper);
+    color-scheme: light;
+  }
+
+  body {
+    margin: 0;
+    background: var(--color-paper);
+    color: var(--color-bone);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background: var(--color-acid);
+    color: var(--color-void);
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-paper);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-steel-2);
+    border: 2px solid var(--color-paper);
+  }
+}
+
+@layer components {
+  .noise-overlay {
+    position: relative;
+  }
+  .noise-overlay::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.05;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* Organic blob shape for the "Our Belief" cards — irregular rounded
+     outline (not a plain circle) via mismatched border-radius corners. */
+  .blob-card {
+    border-radius: 42% 58% 55% 45% / 58% 42% 58% 42%;
+  }
+
+  .text-outline-chrome {
+    -webkit-text-stroke: 1.5px var(--color-chrome);
+    color: transparent;
+  }
+
+  .marquee-track {
+    display: flex;
+    width: max-content;
+    will-change: transform;
+    animation: marquee 22s linear infinite;
+  }
+
+  /* Track content is repeated 4x (see Marquee.tsx) — shifting by exactly
+     1/4 of the track's width moves it by precisely one copy's width, so
+     frame 0 and the post-loop frame are pixel-identical and the restart
+     is invisible. */
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-25%);
+    }
+  }
+
+  /* Y2K chrome / holographic gradient text */
+  .text-chrome-gradient {
+    background: linear-gradient(
+      100deg,
+      var(--color-concrete) 0%,
+      var(--color-bone) 18%,
+      var(--color-chrome-light) 32%,
+      var(--color-acid) 48%,
+      var(--color-chrome-light) 64%,
+      var(--color-bone) 80%,
+      var(--color-concrete) 100%
+    );
+    /* stops read as a dark/metallic/neon sweep now that bone/chrome-light
+       are both mid-to-dark tones tuned for a white background */
+    background-size: 220% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: chrome-sheen 7s linear infinite;
+  }
+
+  @keyframes chrome-sheen {
+    from {
+      background-position: 0% center;
+    }
+    to {
+      background-position: -220% center;
+    }
+  }
+
+  /* Y2K glossy plastic button */
+  .btn-glossy {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background: linear-gradient(180deg, var(--color-acid-2) 0%, var(--color-acid) 55%, var(--color-acid-dim) 100%);
+    color: var(--color-void);
+    box-shadow: var(--shadow-hard);
+  }
+  .btn-glossy::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.75) 0%,
+      rgba(255, 255, 255, 0.15) 35%,
+      rgba(255, 255, 255, 0) 55%
+    );
+    pointer-events: none;
+  }
+
+  /* holographic conic border ring */
+  .border-holo {
+    position: relative;
+  }
+  .border-holo::before {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    z-index: -1;
+    background: conic-gradient(
+      from 90deg,
+      var(--color-acid),
+      var(--color-chrome-light),
+      var(--color-hazard),
+      var(--color-acid)
+    );
+  }
+
+  @keyframes sparkle-spin {
+    from {
+      transform: rotate(0deg) scale(1);
+    }
+    50% {
+      transform: rotate(180deg) scale(0.85);
+    }
+    to {
+      transform: rotate(360deg) scale(1);
+    }
+  }
+  .animate-sparkle {
+    animation: sparkle-spin 6s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .marquee-track,
+    .text-chrome-gradient,
+    .animate-sparkle {
+      animation: none;
+    }
+  }
+
+  /* Below md, the header's scroll-driven pill-morph (see Layout.tsx —
+     narrows into a centered floating pill past 30% scroll) is switched
+     off: on a narrow screen that motion just reads as the nav randomly
+     shrinking/recentering, so it stays a plain fixed-width bar instead.
+     `!important` is required because framer-motion writes these as
+     inline styles, which normal specificity can't override. */
+  @media (max-width: 767px) {
+    .site-header {
+      max-width: 100% !important;
+      border-radius: 0 !important;
+      margin-top: 0 !important;
+      border-color: transparent !important;
+    }
+  }
+}
