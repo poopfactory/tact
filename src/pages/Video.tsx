@@ -3,7 +3,7 @@ export default function Video() {
     <section className="bg-void">
       <div className="mx-auto max-w-[1400px] px-6 pb-24 pt-16 md:px-10 md:pt-20">
         <p className="font-mono text-xs uppercase tracking-widest text-acid">TACT — Film</p>
-        <h1 className="mt-4 font-display text-4xl leading-[0.95] text-paper md:text-6xl">
+        <h1 className="mt-4 font-slogan text-4xl font-bold leading-[0.95] text-paper md:text-6xl">
           WEAR THE FREQUENCY
         </h1>
 
