@@ -7,30 +7,30 @@ interface SimulationControlsProps {
 }
 
 type KeyAction =
-  | { kind: 'tap'; type: 'PLAY_PAUSE' | 'REVERB_TOGGLE' | 'DELAY_TOGGLE'; hand: 'Left' | 'Right' }
+  | { kind: 'tap'; type: 'PLAY_PAUSE' | 'PHASER_TOGGLE' | 'FLANGER_TOGGLE'; hand: 'Left' | 'Right' }
   | { kind: 'hold-start-end'; startType: string; endType: string; hand: 'Left' | 'Right' }
-  | { kind: 'hold-value'; type: 'FILTER_CHANGE' | 'SPEED_CHANGE'; value: number; hand: 'Right' }
+  | { kind: 'hold-value'; type: 'FILTER_CHANGE' | 'DISTORTION_AMOUNT'; value: number; hand: 'Right' }
 
 const KEYMAP: Record<string, KeyAction> = {
   '1': { kind: 'tap', type: 'PLAY_PAUSE', hand: 'Left' },
   '2': { kind: 'hold-start-end', startType: 'VOLUME_UP_START', endType: 'VOLUME_UP_END', hand: 'Left' },
   '3': { kind: 'hold-start-end', startType: 'VOLUME_DOWN_START', endType: 'VOLUME_DOWN_END', hand: 'Left' },
-  q: { kind: 'tap', type: 'REVERB_TOGGLE', hand: 'Right' },
-  w: { kind: 'tap', type: 'DELAY_TOGGLE', hand: 'Right' },
+  q: { kind: 'tap', type: 'PHASER_TOGGLE', hand: 'Right' },
+  w: { kind: 'tap', type: 'FLANGER_TOGGLE', hand: 'Right' },
   e: { kind: 'hold-value', type: 'FILTER_CHANGE', value: 0.6, hand: 'Right' },
   r: { kind: 'hold-value', type: 'FILTER_CHANGE', value: -0.6, hand: 'Right' },
-  t: { kind: 'hold-value', type: 'SPEED_CHANGE', value: 0.6, hand: 'Right' },
-  g: { kind: 'hold-value', type: 'SPEED_CHANGE', value: -0.6, hand: 'Right' },
+  t: { kind: 'hold-value', type: 'DISTORTION_AMOUNT', value: 0.8, hand: 'Right' },
+  g: { kind: 'hold-value', type: 'DISTORTION_AMOUNT', value: 0.1, hand: 'Right' },
 }
 
 const LEGEND: { key: string; label: string }[] = [
   { key: '1', label: 'Play / Pause' },
   { key: '2 (hold)', label: 'Volume Up' },
   { key: '3 (hold)', label: 'Volume Down' },
-  { key: 'Q', label: 'Reverb Toggle' },
-  { key: 'W', label: 'Delay Toggle' },
-  { key: 'T (tap)', label: 'Speed → Faster, stays set' },
-  { key: 'G (tap)', label: 'Speed → Slower, stays set' },
+  { key: 'Q', label: 'Phaser Toggle' },
+  { key: 'W', label: 'Flanger Toggle' },
+  { key: 'T (tap)', label: 'Distortion → More drive, stays set' },
+  { key: 'G (tap)', label: 'Distortion → Less drive, stays set' },
   { key: 'E (tap)', label: 'Filter → High-pass, stays set' },
   { key: 'R (tap)', label: 'Filter → Low-pass, stays set' },
 ]

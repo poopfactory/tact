@@ -13,8 +13,8 @@ interface HoldButtonProps {
 
 /**
  * A button that fires onPress on press-start and onRelease on press-end,
- * for simulating "hold to continuously adjust" gestures (volume, delay
- * mix, filter, speed) from mouse, touch, or keyboard alike.
+ * for simulating "hold to continuously adjust" gestures (volume, flanger
+ * mix, filter, distortion) from mouse, touch, or keyboard alike.
  */
 export function HoldButton({ className, label, pressedLabel, active, onPress, onTap, onRelease, disabled }: HoldButtonProps) {
   const isDown = useRef(false)

@@ -6,11 +6,11 @@ import { FINGERS, FINGER_TIP_LANDMARK, LANDMARK, type FingerId, type Handedness,
 /** Movement below this many palm-widths from the pinch-start baseline is ignored (dead zone). */
 const FILTER_DEAD_ZONE = 0.15
 const FILTER_MAX_RANGE = 1.3
-const SPEED_DEAD_ZONE = 0.12
-const SPEED_MAX_RANGE = 1.1
+const DISTORTION_DEAD_ZONE = 0.12
+const DISTORTION_MAX_RANGE = 1.1
 
 /**
- * Continuous gestures (Delay/Filter/Speed) re-evaluate every tracked hand
+ * Continuous gestures (Flanger/Filter/Distortion) re-evaluate every tracked hand
  * frame, but hand-tracking jitter means the computed value rarely lands on
  * the exact same float twice even when the hand is essentially still.
  * Skipping emits that don't move by more than this keeps the CommandBus
@@ -57,20 +57,21 @@ export class HandGestureController {
   private readonly side: Handedness
   private readonly bus: CommandBus
   private filterBaselineY: number | null = null
-  private speedBaselineY: number | null = null
+  private distortionBaselineY: number | null = null
   /**
-   * Filter/Speed behave like Delay: a pinch-and-move adjusts the value,
-   * releasing leaves it exactly where it was (no spring-back to neutral).
-   * These track the last committed value so the next pinch's relative
-   * movement is added on top of it instead of overwriting from zero.
+   * Filter/Distortion behave like Flanger: a pinch-and-move adjusts the
+   * value, releasing leaves it exactly where it was (no spring-back to
+   * neutral/clean). These track the last committed value so the next
+   * pinch's relative movement is added on top of it instead of
+   * overwriting from zero.
    */
   private filterCommittedValue = 0
-  private speedCommittedValue = 0
+  private distortionCommittedValue = 0
   private filterValueAtPinchStart = 0
-  private speedValueAtPinchStart = 0
+  private distortionValueAtPinchStart = 0
   /** Last value actually emitted for each continuous gesture, to de-duplicate near-identical frames. */
-  private lastEmittedDelayWet: number | null = null
-  private lastEmittedSpeed: number | null = null
+  private lastEmittedFlangerWet: number | null = null
+  private lastEmittedDistortion: number | null = null
   private lastEmittedFilter: number | null = null
 
   constructor(side: Handedness, bus: CommandBus, config: PinchConfig = DEFAULT_PINCH_CONFIG) {
@@ -149,46 +150,50 @@ export class HandGestureController {
 
     switch (finger) {
       case 'index':
-        if (result.justEntered) emit('REVERB_TOGGLE', undefined as never)
+        if (result.justEntered) emit('PHASER_TOGGLE', undefined as never)
         break
 
       case 'middle': {
-        if (result.justEntered) emit('DELAY_TOGGLE', undefined as never)
+        if (result.justEntered) emit('FLANGER_TOGGLE', undefined as never)
         if (result.isPinching && !result.isStale && landmarks) {
           const y = fingertipMidpointY(landmarks, 'middle')
           const wet = clamp(1 - y, 0, 1)
-          if (this.lastEmittedDelayWet === null || Math.abs(wet - this.lastEmittedDelayWet) >= CONTINUOUS_VALUE_EPSILON) {
-            this.lastEmittedDelayWet = wet
-            emit('DELAY_AMOUNT', { value: wet } as never)
+          if (this.lastEmittedFlangerWet === null || Math.abs(wet - this.lastEmittedFlangerWet) >= CONTINUOUS_VALUE_EPSILON) {
+            this.lastEmittedFlangerWet = wet
+            emit('FLANGER_AMOUNT', { value: wet } as never)
           }
         }
-        if (result.justExited) this.lastEmittedDelayWet = null
+        if (result.justExited) this.lastEmittedFlangerWet = null
         break
       }
 
       case 'ring': {
-        // Pitch/Speed. Pinch-and-move adjusts it; releasing leaves it fixed
-        // right where it was (same "set and let go" feel as Delay), rather
-        // than springing back to 1.0x. The next pinch's movement is added
-        // on top of that committed value, not measured from zero again.
+        // Distortion drive. Pinch-and-move adjusts it; releasing leaves it
+        // fixed right where it was (same "set and let go" feel as
+        // Flanger), rather than springing back to clean. The next pinch's
+        // movement is added on top of that committed value, not measured
+        // from zero again.
         if (result.justEntered && landmarks) {
-          this.speedBaselineY = fingertipMidpointY(landmarks, 'ring')
-          this.speedValueAtPinchStart = this.speedCommittedValue
+          this.distortionBaselineY = fingertipMidpointY(landmarks, 'ring')
+          this.distortionValueAtPinchStart = this.distortionCommittedValue
         }
-        if (result.isPinching && !result.isStale && landmarks && this.speedBaselineY !== null && palm > 1e-6) {
+        if (result.isPinching && !result.isStale && landmarks && this.distortionBaselineY !== null && palm > 1e-6) {
           const y = fingertipMidpointY(landmarks, 'ring')
-          const delta = (this.speedBaselineY - y) / palm
-          const movement = mapWithDeadZone(delta, SPEED_DEAD_ZONE, SPEED_MAX_RANGE)
-          const value = clamp(this.speedValueAtPinchStart + movement, -1, 1)
-          this.speedCommittedValue = value
-          if (this.lastEmittedSpeed === null || Math.abs(value - this.lastEmittedSpeed) >= CONTINUOUS_VALUE_EPSILON) {
-            this.lastEmittedSpeed = value
-            emit('SPEED_CHANGE', { value, released: false } as never)
+          const delta = (this.distortionBaselineY - y) / palm
+          const movement = mapWithDeadZone(delta, DISTORTION_DEAD_ZONE, DISTORTION_MAX_RANGE)
+          const value = clamp(this.distortionValueAtPinchStart + movement, 0, 1)
+          this.distortionCommittedValue = value
+          if (
+            this.lastEmittedDistortion === null ||
+            Math.abs(value - this.lastEmittedDistortion) >= CONTINUOUS_VALUE_EPSILON
+          ) {
+            this.lastEmittedDistortion = value
+            emit('DISTORTION_AMOUNT', { value } as never)
           }
         }
         if (result.justExited) {
-          this.speedBaselineY = null
-          this.lastEmittedSpeed = null
+          this.distortionBaselineY = null
+          this.lastEmittedDistortion = null
         }
         break
       }

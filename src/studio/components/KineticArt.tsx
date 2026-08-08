@@ -58,7 +58,7 @@ interface KineticArtProps {
  * Frequency content comes from the engine's post-effects AnalyserNode
  * (always live, independent of Adaptive Audio); rotation speed, echo
  * trails, glow, and which side of the spectrum reads louder come from the
- * live speed/delay/reverb/filter state.
+ * live distortion/flanger/phaser/filter state.
  */
 export function KineticArt({ engine, engineState }: KineticArtProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -111,7 +111,7 @@ export function KineticArt({ engine, engineState }: KineticArtProps) {
       const targetLevel = s.isPlaying ? clamp(rms * 2.6, 0, 1) : 0
       smoothedLevel = lerp(smoothedLevel, targetLevel, clamp(dt * 6, 0, 1))
 
-      const rotationSpeed = (0.16 + s.speed.rate * 0.3) * (s.isPlaying ? 1 : 0.08)
+      const rotationSpeed = (0.16 + s.distortion.amount * 0.4) * (s.isPlaying ? 1 : 0.08)
       globalAngle += rotationSpeed * dt
 
       drawScene(ctx, rect.width, rect.height, freq, s, smoothedLevel, globalAngle, now / 1000)
@@ -147,11 +147,11 @@ function drawScene(
   ctx.clearRect(0, 0, w, h)
 
   const maxRadius = Math.min(w, h) * 0.42 * (0.85 + state.volume * 0.25)
-  const glow = state.reverb.wet
+  const glow = state.phaser.wet
 
-  const echoPasses = Math.round(state.delay.wet * 3)
+  const echoPasses = Math.round(state.flanger.wet * 3)
   for (let pass = echoPasses; pass >= 1; pass--) {
-    const echoAlpha = (1 - pass / (echoPasses + 1)) * 0.35 * Math.max(0.2, state.delay.wet)
+    const echoAlpha = (1 - pass / (echoPasses + 1)) * 0.35 * Math.max(0.2, state.flanger.wet)
     drawRing(ctx, w, h, freq, maxRadius, globalAngle - pass * 0.11, level, state.filter.value, 0, echoAlpha, timeSec, state.isPlaying)
   }
   drawRing(ctx, w, h, freq, maxRadius, globalAngle, level, state.filter.value, glow, 1, timeSec, state.isPlaying)
@@ -174,7 +174,7 @@ function drawRing(
   const innerRadius = maxRadius * 0.34
 
   // Soft core bloom - "the effect is lit up", brightening with loudness
-  // and reverb wet, sitting under everything else.
+  // and phaser wet, sitting under everything else.
   const bloomRadius = maxRadius * (0.55 + level * 0.25 + glow * 0.3)
   const bloom = ctx.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, bloomRadius)
   bloom.addColorStop(0, hexToRgba(ACCENT, (0.16 + level * 0.14 + glow * 0.1) * alphaScale))
@@ -232,7 +232,7 @@ function drawRing(
     ctx.beginPath()
     ctx.strokeStyle = gradient
     ctx.lineWidth = Math.max(0.7, 1.8 * pOuter.scale)
-    // Always glowing, at least a little - reverb pours on extra bloom.
+    // Always glowing, at least a little - phaser pours on extra bloom.
     ctx.shadowColor = ACCENT
     ctx.shadowBlur = 4 + brightness * 6 + glow * 20
     ctx.moveTo(pInner.x, pInner.y)

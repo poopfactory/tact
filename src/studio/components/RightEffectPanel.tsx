@@ -24,7 +24,7 @@ export function RightEffectPanel({ bus, engineState, gesture }: RightEffectPanel
   const ringActive = !!gesture?.ring.isPinching
   const pinkyActive = !!gesture?.pinky.isPinching
 
-  const [speedSlider, setSpeedSlider] = useState(0)
+  const [distortionSlider, setDistortionSlider] = useState(0)
 
   return (
     <section className="side-panel side-panel--right" aria-label="오른손 컨트롤 - 이펙트">
@@ -37,55 +37,55 @@ export function RightEffectPanel({ bus, engineState, gesture }: RightEffectPanel
       <div className={`gesture-card ${indexActive ? 'gesture-card--active' : ''}`}>
         <HoldButton
           className="gesture-card__button"
-          label={`Reverb ${engineState.reverb.enabled ? 'On' : 'Off'}`}
+          label={`Phaser ${engineState.phaser.enabled ? 'On' : 'Off'}`}
           active={indexActive}
           onPress={() => {}}
-          onRelease={() => emit('REVERB_TOGGLE', undefined as never)}
+          onRelease={() => emit('PHASER_TOGGLE', undefined as never)}
         />
         <p className="gesture-card__hint">
-          Thumb + Index · wet <span className="readout">{Math.round(engineState.reverb.wet * 100)}%</span>
+          Thumb + Index · wet <span className="readout">{Math.round(engineState.phaser.wet * 100)}%</span>
         </p>
       </div>
 
       <div className={`gesture-card ${middleActive ? 'gesture-card--active' : ''}`}>
         <HoldButton
           className="gesture-card__button"
-          label={`Delay ${engineState.delay.enabled ? 'On' : 'Off'}`}
+          label={`Flanger ${engineState.flanger.enabled ? 'On' : 'Off'}`}
           active={middleActive}
           onPress={() => {}}
-          onRelease={() => emit('DELAY_TOGGLE', undefined as never)}
+          onRelease={() => emit('FLANGER_TOGGLE', undefined as never)}
         />
-        <label className="gesture-card__slider-label" htmlFor="delay-amount">
-          Wet mix · <span className="readout">{Math.round(engineState.delay.wet * 100)}%</span>
+        <label className="gesture-card__slider-label" htmlFor="flanger-amount">
+          Wet mix · <span className="readout">{Math.round(engineState.flanger.wet * 100)}%</span>
         </label>
         <input
-          id="delay-amount"
+          id="flanger-amount"
           type="range"
           min={0}
           max={100}
           defaultValue={35}
           className="gesture-card__slider"
-          aria-label="딜레이 wet mix 시뮬레이션 슬라이더"
-          onChange={(e) => emit('DELAY_AMOUNT', { value: Number(e.target.value) / 100 } as never)}
+          aria-label="플랜저 wet mix 시뮬레이션 슬라이더"
+          onChange={(e) => emit('FLANGER_AMOUNT', { value: Number(e.target.value) / 100 } as never)}
         />
       </div>
 
       <div className={`gesture-card ${ringActive ? 'gesture-card--active' : ''}`}>
-        <p className="gesture-card__title">Pitch / Speed</p>
+        <p className="gesture-card__title">Distortion</p>
         <p className="gesture-card__hint">
-          Thumb + Ring · <span className="readout">{engineState.speed.rate.toFixed(2)}x</span>
+          Thumb + Ring · drive <span className="readout">{Math.round(engineState.distortion.amount * 100)}%</span>
         </p>
         <input
           type="range"
-          min={-100}
+          min={0}
           max={100}
-          value={speedSlider}
+          value={distortionSlider}
           className="gesture-card__slider"
-          aria-label="속도/피치 시뮬레이션 슬라이더 - 조절 후 그대로 유지됩니다 (위: 빠르게, 아래: 느리게)"
+          aria-label="디스토션 드라이브 시뮬레이션 슬라이더 - 조절 후 그대로 유지됩니다"
           onChange={(e) => {
             const v = Number(e.target.value)
-            setSpeedSlider(v)
-            emit('SPEED_CHANGE', { value: v / 100, released: false } as never)
+            setDistortionSlider(v)
+            emit('DISTORTION_AMOUNT', { value: v / 100 } as never)
           }}
         />
       </div>

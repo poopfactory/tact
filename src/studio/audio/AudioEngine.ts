@@ -1,16 +1,22 @@
 import type { AnyCommand, CommandBus } from '../commands/commandBus'
 import { clamp, lerp } from '../shared/math'
 import { AdaptiveAudioProcessor } from './AdaptiveAudio'
-import { generateImpulseResponse } from './impulseResponse'
+import { makeDistortionCurve } from './distortionCurve'
 import type { EngineState, SourceMode } from './types'
 
-const BASE_REVERB_WET = 0.42
-const DEFAULT_DELAY_WET = 0.35
-const DELAY_FEEDBACK = 0.34 // fixed, deliberately conservative to avoid runaway buildup
-const DELAY_TIME_SECONDS = 0.32
+const BASE_PHASER_WET = 0.55
+const DEFAULT_FLANGER_WET = 0.35
+const FLANGER_FEEDBACK = 0.3 // fixed, deliberately conservative to avoid runaway buildup
+const FLANGER_BASE_DELAY_SECONDS = 0.006
+const FLANGER_LFO_DEPTH_SECONDS = 0.0035
+const FLANGER_LFO_RATE_HZ = 0.22
+const PHASER_STAGE_COUNT = 4
+const PHASER_BASE_FREQUENCY_HZ = 700
+const PHASER_LFO_DEPTH_HZ = 500
+const PHASER_LFO_RATE_HZ = 0.35
+const DISTORTION_CURVE_AMOUNT = 55 // fixed curve intensity; the amount knob only controls wet mix
 const RAMP_TIME_CONSTANT = 0.08
 const VOLUME_RAMP_PER_SECOND = 0.6
-const SPEED_TRACK_RATE = 0.18 // per-tick lerp factor toward the target playbackRate
 
 type VolumeRampDirection = 'up' | 'down' | null
 
@@ -19,11 +25,6 @@ function filterParamsFromValue(value: number): { type: BiquadFilterType; frequen
     return { type: 'highpass', frequency: lerp(20, 6000, value) }
   }
   return { type: 'lowpass', frequency: lerp(20000, 400, -value) }
-}
-
-function rateFromSpeedValue(value: number): number {
-  if (value >= 0) return lerp(1.0, 1.35, value)
-  return lerp(1.0, 0.75, -value)
 }
 
 type Listener = (state: EngineState) => void
@@ -40,15 +41,31 @@ export class AudioEngine {
   private readonly sourceGain: GainNode
   private readonly preAnalyser: AnalyserNode
   private readonly filterNode: BiquadFilterNode
-  private readonly delayNode: DelayNode
-  private readonly delayFeedback: GainNode
-  private readonly delayWet: GainNode
-  private readonly delayDry: GainNode
-  private readonly postDelay: GainNode
-  private readonly convolver: ConvolverNode
-  private readonly reverbWet: GainNode
-  private readonly reverbDry: GainNode
-  private readonly postReverb: GainNode
+
+  // Flanger - short LFO-modulated delay + feedback, wet/dry mixed.
+  private readonly flangerDelay: DelayNode
+  private readonly flangerLFO: OscillatorNode
+  private readonly flangerLFODepth: GainNode
+  private readonly flangerFeedback: GainNode
+  private readonly flangerWet: GainNode
+  private readonly flangerDry: GainNode
+  private readonly postFlanger: GainNode
+
+  // Phaser - a chain of allpass stages, all swept together by one LFO.
+  private readonly phaserStages: BiquadFilterNode[]
+  private readonly phaserLFO: OscillatorNode
+  private readonly phaserLFODepth: GainNode
+  private readonly phaserWet: GainNode
+  private readonly phaserDry: GainNode
+  private readonly postPhaser: GainNode
+
+  // Distortion - fixed waveshaper curve; the "amount" knob is purely the
+  // wet/dry mix, so it reads as a drive knob rather than a hard on/off.
+  private readonly distortionShaper: WaveShaperNode
+  private readonly distortionWet: GainNode
+  private readonly distortionDry: GainNode
+  private readonly postDistortion: GainNode
+
   private readonly adaptiveGainComp: GainNode
   private readonly masterGain: GainNode
   private readonly limiter: DynamicsCompressorNode
@@ -76,12 +93,11 @@ export class AudioEngine {
   private volume = 0.75
   private volumeRampDirection: VolumeRampDirection = null
 
-  private reverbEnabled = false
-  private delayEnabled = false
-  private delayAmount = DEFAULT_DELAY_WET
+  private phaserEnabled = false
+  private flangerEnabled = false
+  private flangerAmount = DEFAULT_FLANGER_WET
   private filterValue = 0
-  private speedTarget = 1
-  private speedCurrent = 1
+  private distortionAmount = 0
 
   private lastFeedback: { message: string; at: number } | null = null
   private lastTickAt: number | null = null
@@ -108,23 +124,53 @@ export class AudioEngine {
     this.filterNode.frequency.value = 20
     this.filterNode.Q.value = 0.6
 
-    this.delayNode = ctx.createDelay(1.0)
-    this.delayNode.delayTime.value = DELAY_TIME_SECONDS
-    this.delayFeedback = ctx.createGain()
-    this.delayFeedback.gain.value = DELAY_FEEDBACK
-    this.delayWet = ctx.createGain()
-    this.delayWet.gain.value = 0
-    this.delayDry = ctx.createGain()
-    this.delayDry.gain.value = 1
-    this.postDelay = ctx.createGain()
+    // Flanger: a short delay line whose time is swept by a slow LFO, with
+    // a bit of feedback fed back into itself for resonance.
+    this.flangerDelay = ctx.createDelay(0.05)
+    this.flangerDelay.delayTime.value = FLANGER_BASE_DELAY_SECONDS
+    this.flangerLFO = ctx.createOscillator()
+    this.flangerLFO.type = 'sine'
+    this.flangerLFO.frequency.value = FLANGER_LFO_RATE_HZ
+    this.flangerLFODepth = ctx.createGain()
+    this.flangerLFODepth.gain.value = FLANGER_LFO_DEPTH_SECONDS
+    this.flangerFeedback = ctx.createGain()
+    this.flangerFeedback.gain.value = FLANGER_FEEDBACK
+    this.flangerWet = ctx.createGain()
+    this.flangerWet.gain.value = 0
+    this.flangerDry = ctx.createGain()
+    this.flangerDry.gain.value = 1
+    this.postFlanger = ctx.createGain()
 
-    this.convolver = ctx.createConvolver()
-    this.convolver.buffer = generateImpulseResponse(ctx)
-    this.reverbWet = ctx.createGain()
-    this.reverbWet.gain.value = 0
-    this.reverbDry = ctx.createGain()
-    this.reverbDry.gain.value = 1
-    this.postReverb = ctx.createGain()
+    // Phaser: a series of allpass filters, all swept together by one LFO
+    // riding on top of each stage's base frequency.
+    this.phaserStages = Array.from({ length: PHASER_STAGE_COUNT }, () => {
+      const stage = ctx.createBiquadFilter()
+      stage.type = 'allpass'
+      stage.frequency.value = PHASER_BASE_FREQUENCY_HZ
+      stage.Q.value = 0.5
+      return stage
+    })
+    this.phaserLFO = ctx.createOscillator()
+    this.phaserLFO.type = 'sine'
+    this.phaserLFO.frequency.value = PHASER_LFO_RATE_HZ
+    this.phaserLFODepth = ctx.createGain()
+    this.phaserLFODepth.gain.value = PHASER_LFO_DEPTH_HZ
+    this.phaserWet = ctx.createGain()
+    this.phaserWet.gain.value = 0
+    this.phaserDry = ctx.createGain()
+    this.phaserDry.gain.value = 1
+    this.postPhaser = ctx.createGain()
+
+    // Distortion: fixed waveshaper curve, wet/dry-mixed so the amount knob
+    // reads as "how much drive is blended in" rather than a hard toggle.
+    this.distortionShaper = ctx.createWaveShaper()
+    this.distortionShaper.curve = makeDistortionCurve(DISTORTION_CURVE_AMOUNT)
+    this.distortionShaper.oversample = '4x'
+    this.distortionWet = ctx.createGain()
+    this.distortionWet.gain.value = 0
+    this.distortionDry = ctx.createGain()
+    this.distortionDry.gain.value = 1
+    this.postDistortion = ctx.createGain()
 
     this.adaptiveGainComp = ctx.createGain()
     this.masterGain = ctx.createGain()
@@ -147,27 +193,47 @@ export class AudioEngine {
     this.sourceGain.connect(this.preAnalyser)
     this.preAnalyser.connect(this.filterNode)
 
-    this.filterNode.connect(this.delayDry)
-    this.filterNode.connect(this.delayNode)
-    this.delayNode.connect(this.delayFeedback)
-    this.delayFeedback.connect(this.delayNode)
-    this.delayNode.connect(this.delayWet)
-    this.delayDry.connect(this.postDelay)
-    this.delayWet.connect(this.postDelay)
+    // Flanger stage
+    this.filterNode.connect(this.flangerDry)
+    this.filterNode.connect(this.flangerDelay)
+    this.flangerDelay.connect(this.flangerFeedback)
+    this.flangerFeedback.connect(this.flangerDelay)
+    this.flangerDelay.connect(this.flangerWet)
+    this.flangerDry.connect(this.postFlanger)
+    this.flangerWet.connect(this.postFlanger)
+    this.flangerLFO.connect(this.flangerLFODepth)
+    this.flangerLFODepth.connect(this.flangerDelay.delayTime)
 
-    this.postDelay.connect(this.reverbDry)
-    this.postDelay.connect(this.convolver)
-    this.convolver.connect(this.reverbWet)
-    this.reverbDry.connect(this.postReverb)
-    this.reverbWet.connect(this.postReverb)
+    // Phaser stage - the allpass chain runs in series, then wet/dry mixed
+    // against the flanger's output.
+    this.postFlanger.connect(this.phaserDry)
+    this.postFlanger.connect(this.phaserStages[0])
+    for (let i = 0; i < this.phaserStages.length - 1; i++) {
+      this.phaserStages[i].connect(this.phaserStages[i + 1])
+    }
+    this.phaserStages[this.phaserStages.length - 1].connect(this.phaserWet)
+    this.phaserDry.connect(this.postPhaser)
+    this.phaserWet.connect(this.postPhaser)
+    this.phaserLFO.connect(this.phaserLFODepth)
+    for (const stage of this.phaserStages) this.phaserLFODepth.connect(stage.frequency)
 
-    this.postReverb.connect(this.adaptiveGainComp)
+    // Distortion stage
+    this.postPhaser.connect(this.distortionDry)
+    this.postPhaser.connect(this.distortionShaper)
+    this.distortionShaper.connect(this.distortionWet)
+    this.distortionDry.connect(this.postDistortion)
+    this.distortionWet.connect(this.postDistortion)
+
+    this.postDistortion.connect(this.adaptiveGainComp)
     this.adaptiveGainComp.connect(this.masterGain)
     this.masterGain.connect(this.limiter)
     this.limiter.connect(this.outputAnalyser)
     this.outputAnalyser.connect(ctx.destination)
 
     this.adaptive = new AdaptiveAudioProcessor(this.preAnalyser, this.outputAnalyser)
+
+    this.flangerLFO.start()
+    this.phaserLFO.start()
 
     this.unsubscribeBus = bus.subscribe((command) => this.handleCommand(command))
     this.startDemoOscillators()
@@ -217,7 +283,6 @@ export class AudioEngine {
     const audio = new Audio()
     audio.src = url
     audio.crossOrigin = 'anonymous'
-    setPreservesPitch(audio, false)
 
     audio.addEventListener('timeupdate', this.handleTimeUpdate)
     audio.addEventListener('loadedmetadata', this.handleTimeUpdate)
@@ -335,7 +400,7 @@ export class AudioEngine {
     return false
   }
 
-  /** Advance time-based ramps (volume hold, speed smoothing) and adaptive analysis. Call every animation frame. */
+  /** Advance time-based ramps (volume hold) and adaptive analysis. Call every animation frame. */
   tick(nowMs: number): void {
     const dt = this.lastTickAt === null ? 1 / 60 : Math.min(0.1, (nowMs - this.lastTickAt) / 1000)
     this.lastTickAt = nowMs
@@ -346,21 +411,20 @@ export class AudioEngine {
     }
     this.masterGain.gain.setTargetAtTime(this.volume, this.context.currentTime, RAMP_TIME_CONSTANT)
 
-    this.speedCurrent = lerp(this.speedCurrent, this.speedTarget, SPEED_TRACK_RATE)
-    if (this.audioEl) this.audioEl.playbackRate = this.speedCurrent
-    this.applyDemoRate(this.speedCurrent)
-
     const telemetry = this.adaptive.process()
     const ceiling = telemetry.wetCeiling
 
-    const reverbTarget = this.reverbEnabled ? BASE_REVERB_WET * ceiling : 0
-    this.reverbWet.gain.setTargetAtTime(reverbTarget, this.context.currentTime, RAMP_TIME_CONSTANT)
+    const phaserTarget = this.phaserEnabled ? BASE_PHASER_WET * ceiling : 0
+    this.phaserWet.gain.setTargetAtTime(phaserTarget, this.context.currentTime, RAMP_TIME_CONSTANT)
 
-    const delayTarget = this.delayEnabled ? this.delayAmount * ceiling : 0
-    this.delayWet.gain.setTargetAtTime(delayTarget, this.context.currentTime, RAMP_TIME_CONSTANT)
+    const flangerTarget = this.flangerEnabled ? this.flangerAmount * ceiling : 0
+    this.flangerWet.gain.setTargetAtTime(flangerTarget, this.context.currentTime, RAMP_TIME_CONSTANT)
     // Extra feedback safety margin when the source is bass-heavy (ceiling drops -> pull feedback down too).
-    const feedbackTarget = DELAY_FEEDBACK * clamp(0.5 + ceiling * 0.5, 0, 1)
-    this.delayFeedback.gain.setTargetAtTime(feedbackTarget, this.context.currentTime, RAMP_TIME_CONSTANT)
+    const feedbackTarget = FLANGER_FEEDBACK * clamp(0.5 + ceiling * 0.5, 0, 1)
+    this.flangerFeedback.gain.setTargetAtTime(feedbackTarget, this.context.currentTime, RAMP_TIME_CONSTANT)
+
+    const distortionTarget = this.distortionAmount * ceiling
+    this.distortionWet.gain.setTargetAtTime(distortionTarget, this.context.currentTime, RAMP_TIME_CONSTANT)
 
     this.adaptiveGainComp.gain.setTargetAtTime(telemetry.gainCompensation, this.context.currentTime, RAMP_TIME_CONSTANT)
 
@@ -377,10 +441,10 @@ export class AudioEngine {
       currentTime: this.audioEl?.currentTime ?? 0,
       duration: this.audioEl?.duration && Number.isFinite(this.audioEl.duration) ? this.audioEl.duration : 0,
       volume: this.volume,
-      reverb: { enabled: this.reverbEnabled, wet: this.reverbWet.gain.value },
-      delay: { enabled: this.delayEnabled, wet: this.delayWet.gain.value },
+      phaser: { enabled: this.phaserEnabled, wet: this.phaserWet.gain.value },
+      flanger: { enabled: this.flangerEnabled, wet: this.flangerWet.gain.value },
       filter: { value: this.filterValue, type: filterParams.type, frequency: this.filterNode.frequency.value },
-      speed: { rate: this.speedCurrent },
+      distortion: { amount: this.distortionWet.gain.value },
       adaptive: this.adaptive.getSnapshot(),
       lastFeedback: this.lastFeedback,
     }
@@ -390,6 +454,8 @@ export class AudioEngine {
     this.unsubscribeBus()
     this.teardownFileSource()
     this.demoOscillators?.stop()
+    this.flangerLFO.stop()
+    this.phaserLFO.stop()
     void this.context.close()
     this.listeners.clear()
   }
@@ -413,28 +479,28 @@ export class AudioEngine {
       case 'VOLUME_DOWN_END':
         if (this.volumeRampDirection === 'down') this.volumeRampDirection = null
         break
-      case 'REVERB_TOGGLE':
-        this.reverbEnabled = !this.reverbEnabled
-        this.flashFeedback(`Reverb ${this.reverbEnabled ? 'On' : 'Off'}`)
+      case 'PHASER_TOGGLE':
+        this.phaserEnabled = !this.phaserEnabled
+        this.flashFeedback(`Phaser ${this.phaserEnabled ? 'On' : 'Off'}`)
         break
-      case 'DELAY_TOGGLE':
-        this.delayEnabled = !this.delayEnabled
-        this.flashFeedback(`Delay ${this.delayEnabled ? 'On' : 'Off'}`)
+      case 'FLANGER_TOGGLE':
+        this.flangerEnabled = !this.flangerEnabled
+        this.flashFeedback(`Flanger ${this.flangerEnabled ? 'On' : 'Off'}`)
         break
-      case 'DELAY_AMOUNT':
-        this.delayAmount = clamp(command.payload.value, 0, 1)
+      case 'FLANGER_AMOUNT':
+        this.flangerAmount = clamp(command.payload.value, 0, 1)
         break
       case 'FILTER_CHANGE':
         this.filterValue = clamp(command.payload.value, -1, 1)
         this.applyFilterImmediate()
         break
-      case 'SPEED_CHANGE':
-        this.speedTarget = rateFromSpeedValue(clamp(command.payload.value, -1, 1))
+      case 'DISTORTION_AMOUNT':
+        this.distortionAmount = clamp(command.payload.value, 0, 1)
         break
     }
     // No notify() here on purpose. The tick() loop already calls notify()
     // every animation frame regardless, so this would just be a duplicate,
-    // same-frame re-render - and DELAY_AMOUNT/FILTER_CHANGE/SPEED_CHANGE
+    // same-frame re-render - and FLANGER_AMOUNT/FILTER_CHANGE/DISTORTION_AMOUNT
     // fire on *every tracked hand frame* while a right-hand pinch is held,
     // which was doubling React's render rate for the whole app during
     // continuous right-hand gestures. On mobile, with hand-tracking
@@ -480,17 +546,6 @@ export class AudioEngine {
         osc2.stop()
       },
     }
-    this.demoBaseFrequencies = [110, 164.81]
-    this.demoOscNodes = [osc1, osc2]
-  }
-
-  private demoBaseFrequencies: number[] = []
-  private demoOscNodes: OscillatorNode[] = []
-
-  private applyDemoRate(rate: number): void {
-    this.demoOscNodes.forEach((osc, i) => {
-      osc.frequency.setTargetAtTime(this.demoBaseFrequencies[i] * rate, this.context.currentTime, RAMP_TIME_CONSTANT)
-    })
   }
 
   private setDemoEnabled(enabled: boolean): void {
@@ -507,17 +562,4 @@ export class AudioEngine {
     const state = this.getState()
     for (const l of this.listeners) l(state)
   }
-}
-
-function setPreservesPitch(audio: HTMLAudioElement, preserve: boolean): void {
-  // Explicitly opt OUT of pitch preservation so playbackRate produces a DJ-style
-  // speed+pitch coupling instead of the browser's default time-stretched pitch correction.
-  const el = audio as HTMLAudioElement & {
-    preservesPitch?: boolean
-    mozPreservesPitch?: boolean
-    webkitPreservesPitch?: boolean
-  }
-  el.preservesPitch = preserve
-  el.mozPreservesPitch = preserve
-  el.webkitPreservesPitch = preserve
 }

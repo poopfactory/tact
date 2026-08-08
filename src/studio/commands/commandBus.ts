@@ -12,22 +12,16 @@ export type CommandType =
   | 'VOLUME_UP_END'
   | 'VOLUME_DOWN_START'
   | 'VOLUME_DOWN_END'
-  | 'REVERB_TOGGLE'
-  | 'DELAY_TOGGLE'
-  | 'DELAY_AMOUNT'
+  | 'PHASER_TOGGLE'
+  | 'FLANGER_TOGGLE'
+  | 'FLANGER_AMOUNT'
   | 'FILTER_CHANGE'
-  | 'SPEED_CHANGE'
+  | 'DISTORTION_AMOUNT'
 
 export interface FilterChangePayload {
   /** -1 (full low-pass) .. 0 (neutral) .. 1 (full high-pass) */
   value: number
   /** true when this update represents releasing back toward neutral. */
-  released: boolean
-}
-
-export interface SpeedChangePayload {
-  /** -1 (slowest) .. 0 (neutral) .. 1 (fastest), pre-mapping to playbackRate */
-  value: number
   released: boolean
 }
 
@@ -37,11 +31,12 @@ export interface CommandPayloadMap {
   VOLUME_UP_END: undefined
   VOLUME_DOWN_START: undefined
   VOLUME_DOWN_END: undefined
-  REVERB_TOGGLE: undefined
-  DELAY_TOGGLE: undefined
-  DELAY_AMOUNT: { value: number }
+  PHASER_TOGGLE: undefined
+  FLANGER_TOGGLE: undefined
+  FLANGER_AMOUNT: { value: number }
   FILTER_CHANGE: FilterChangePayload
-  SPEED_CHANGE: SpeedChangePayload
+  /** 0 (clean) .. 1 (fully driven) */
+  DISTORTION_AMOUNT: { value: number }
 }
 
 export type CommandSource = 'gesture' | 'simulation'

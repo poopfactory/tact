@@ -1,9 +1,9 @@
-export interface ReverbState {
+export interface PhaserState {
   enabled: boolean
   wet: number
 }
 
-export interface DelayState {
+export interface FlangerState {
   enabled: boolean
   wet: number
 }
@@ -15,9 +15,9 @@ export interface FilterState {
   frequency: number
 }
 
-export interface SpeedState {
-  /** Actual, currently-applied playbackRate (smoothed toward the target each tick). */
-  rate: number
+export interface DistortionState {
+  /** 0 (clean, bypassed) .. 1 (fully driven), as the actual (ramped) wet mix. */
+  amount: number
 }
 
 export interface AdaptiveState {
@@ -40,10 +40,10 @@ export interface EngineState {
   duration: number
   /** Master output level 0..1 - shared by the left-hand gesture ramp and the bottom-bar slider. */
   volume: number
-  reverb: ReverbState
-  delay: DelayState
+  phaser: PhaserState
+  flanger: FlangerState
   filter: FilterState
-  speed: SpeedState
+  distortion: DistortionState
   adaptive: AdaptiveState
   lastFeedback: { message: string; at: number } | null
 }
