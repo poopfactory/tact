@@ -4,7 +4,7 @@ import { AdaptiveAudioProcessor } from './AdaptiveAudio'
 import { makeDistortionCurve } from './distortionCurve'
 import type { EngineState, SourceMode } from './types'
 
-const BASE_PHASER_WET = 0.55
+const DEFAULT_PHASER_WET = 0.55
 const DEFAULT_FLANGER_WET = 0.35
 const FLANGER_FEEDBACK = 0.3 // fixed, deliberately conservative to avoid runaway buildup
 const FLANGER_BASE_DELAY_SECONDS = 0.006
@@ -94,6 +94,7 @@ export class AudioEngine {
   private volumeRampDirection: VolumeRampDirection = null
 
   private phaserEnabled = false
+  private phaserAmount = DEFAULT_PHASER_WET
   private flangerEnabled = false
   private flangerAmount = DEFAULT_FLANGER_WET
   private filterValue = 0
@@ -414,7 +415,7 @@ export class AudioEngine {
     const telemetry = this.adaptive.process()
     const ceiling = telemetry.wetCeiling
 
-    const phaserTarget = this.phaserEnabled ? BASE_PHASER_WET * ceiling : 0
+    const phaserTarget = this.phaserEnabled ? this.phaserAmount * ceiling : 0
     this.phaserWet.gain.setTargetAtTime(phaserTarget, this.context.currentTime, RAMP_TIME_CONSTANT)
 
     const flangerTarget = this.flangerEnabled ? this.flangerAmount * ceiling : 0
@@ -483,6 +484,9 @@ export class AudioEngine {
         this.phaserEnabled = !this.phaserEnabled
         this.flashFeedback(`Phaser ${this.phaserEnabled ? 'On' : 'Off'}`)
         break
+      case 'PHASER_AMOUNT':
+        this.phaserAmount = clamp(command.payload.value, 0, 1)
+        break
       case 'FLANGER_TOGGLE':
         this.flangerEnabled = !this.flangerEnabled
         this.flashFeedback(`Flanger ${this.flangerEnabled ? 'On' : 'Off'}`)
@@ -500,7 +504,7 @@ export class AudioEngine {
     }
     // No notify() here on purpose. The tick() loop already calls notify()
     // every animation frame regardless, so this would just be a duplicate,
-    // same-frame re-render - and FLANGER_AMOUNT/FILTER_CHANGE/DISTORTION_AMOUNT
+    // same-frame re-render - and PHASER_AMOUNT/FLANGER_AMOUNT/FILTER_CHANGE/DISTORTION_AMOUNT
     // fire on *every tracked hand frame* while a right-hand pinch is held,
     // which was doubling React's render rate for the whole app during
     // continuous right-hand gestures. On mobile, with hand-tracking

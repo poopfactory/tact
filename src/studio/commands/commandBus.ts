@@ -13,6 +13,7 @@ export type CommandType =
   | 'VOLUME_DOWN_START'
   | 'VOLUME_DOWN_END'
   | 'PHASER_TOGGLE'
+  | 'PHASER_AMOUNT'
   | 'FLANGER_TOGGLE'
   | 'FLANGER_AMOUNT'
   | 'FILTER_CHANGE'
@@ -32,6 +33,7 @@ export interface CommandPayloadMap {
   VOLUME_DOWN_START: undefined
   VOLUME_DOWN_END: undefined
   PHASER_TOGGLE: undefined
+  PHASER_AMOUNT: { value: number }
   FLANGER_TOGGLE: undefined
   FLANGER_AMOUNT: { value: number }
   FILTER_CHANGE: FilterChangePayload

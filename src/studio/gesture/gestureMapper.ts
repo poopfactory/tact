@@ -70,6 +70,7 @@ export class HandGestureController {
   private filterValueAtPinchStart = 0
   private distortionValueAtPinchStart = 0
   /** Last value actually emitted for each continuous gesture, to de-duplicate near-identical frames. */
+  private lastEmittedPhaserWet: number | null = null
   private lastEmittedFlangerWet: number | null = null
   private lastEmittedDistortion: number | null = null
   private lastEmittedFilter: number | null = null
@@ -149,9 +150,19 @@ export class HandGestureController {
       this.bus.emit(type as never, payload, { source, hand: this.side, now })
 
     switch (finger) {
-      case 'index':
+      case 'index': {
         if (result.justEntered) emit('PHASER_TOGGLE', undefined as never)
+        if (result.isPinching && !result.isStale && landmarks) {
+          const y = fingertipMidpointY(landmarks, 'index')
+          const wet = clamp(1 - y, 0, 1)
+          if (this.lastEmittedPhaserWet === null || Math.abs(wet - this.lastEmittedPhaserWet) >= CONTINUOUS_VALUE_EPSILON) {
+            this.lastEmittedPhaserWet = wet
+            emit('PHASER_AMOUNT', { value: wet } as never)
+          }
+        }
+        if (result.justExited) this.lastEmittedPhaserWet = null
         break
+      }
 
       case 'middle': {
         if (result.justEntered) emit('FLANGER_TOGGLE', undefined as never)

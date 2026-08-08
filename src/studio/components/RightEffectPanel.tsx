@@ -42,9 +42,19 @@ export function RightEffectPanel({ bus, engineState, gesture }: RightEffectPanel
           onPress={() => {}}
           onRelease={() => emit('PHASER_TOGGLE', undefined as never)}
         />
-        <p className="gesture-card__hint">
-          Thumb + Index · wet <span className="readout">{Math.round(engineState.phaser.wet * 100)}%</span>
-        </p>
+        <label className="gesture-card__slider-label" htmlFor="phaser-amount">
+          Wet mix · <span className="readout">{Math.round(engineState.phaser.wet * 100)}%</span>
+        </label>
+        <input
+          id="phaser-amount"
+          type="range"
+          min={0}
+          max={100}
+          defaultValue={55}
+          className="gesture-card__slider"
+          aria-label="페이저 wet mix 시뮬레이션 슬라이더"
+          onChange={(e) => emit('PHASER_AMOUNT', { value: Number(e.target.value) / 100 } as never)}
+        />
       </div>
 
       <div className={`gesture-card ${middleActive ? 'gesture-card--active' : ''}`}>
