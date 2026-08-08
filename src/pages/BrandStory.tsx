@@ -9,15 +9,15 @@ import { SITE_SLOGAN } from '../lib/brand'
 const beliefs = [
   {
     title: 'Zero Barrier',
-    body: '손가락을 집고 튕기는 직관적인 제스처 하나만 누구나 즉시 음악을 조작합니다.',
+    bodyLines: ['손가락을 집고 튕기는 직관적인 제스처', '하나만 누구나 즉시 음악을 조작합니다.'],
   },
   {
     title: 'Iconic Piece',
-    body: '단순한 기기가 아닌 당신의 취향을 완성하는 주얼리로서 빛납니다.',
+    bodyLines: ['단순한 기기가 아닌 당신의 취향을', '완성하는 주얼리로서 빛납니다.'],
   },
   {
     title: 'Playful',
-    body: '수동적인 청취를 넘어, 음악을 직접 다루고 노는 즐거움을 선사합니다.',
+    bodyLines: ['수동적인 청취를 넘어, 음악을 직접 다루고', '노는 즐거움을 선사합니다.'],
   },
 ]
 
@@ -69,7 +69,7 @@ export default function BrandStory() {
       <section className="bg-paper">
         <div className="mx-auto max-w-[900px] px-6 pb-24 pt-20 text-center md:px-10 md:pt-28">
           <p className="font-mono text-xs uppercase tracking-widest text-acid">About Us</p>
-          <h1 className="mt-4 font-slogan text-4xl font-extrabold leading-[1.05] md:text-6xl">
+          <h1 className="mt-4 font-slogan text-4xl font-bold leading-[1.05] md:text-6xl">
             <ScrollRevealWords text="Sound is Fashion" />
             <br />
             <ScrollRevealWords text="Motion is Rhythm" />
@@ -129,7 +129,7 @@ export default function BrandStory() {
           restated here as blob-shaped cards. */}
       <section className="bg-paper">
         <div className="mx-auto max-w-[900px] px-6 pt-20 text-center md:px-10 md:pt-28">
-          <h2 className="font-slogan text-2xl font-extrabold md:text-4xl">Our Belief</h2>
+          <h2 className="font-slogan text-2xl font-bold md:text-4xl">Our Belief</h2>
           <p className="mx-auto mt-5 max-w-2xl font-kr text-sm leading-relaxed text-concrete md:text-base">
             <span className="block">
               TACT는 음악을 그저 '듣는 사람'에 머물던 당신을, 분위기를 주도하는 '플레이어'로 바꿀 수 있다고
@@ -142,10 +142,16 @@ export default function BrandStory() {
           {beliefs.map((b) => (
             <div
               key={b.title}
-              className="blob-card mx-auto flex aspect-square w-[240px] flex-col items-center justify-center bg-paper-2 px-8 text-center md:w-[270px]"
+              className="blob-card mx-auto flex aspect-square w-[240px] flex-col items-center justify-center bg-paper-2 px-6 text-center md:w-[270px] md:px-8"
             >
               <span className="font-display text-lg md:text-xl">{b.title}</span>
-              <p className="mt-3 font-kr text-xs leading-relaxed text-concrete md:text-sm">{b.body}</p>
+              <p className="mt-3 font-kr text-[10px] leading-relaxed text-concrete md:text-xs">
+                {b.bodyLines.map((line) => (
+                  <span key={line} className="block">
+                    {line}
+                  </span>
+                ))}
+              </p>
             </div>
           ))}
         </div>

@@ -230,13 +230,13 @@ export default function Shop() {
           scale the same coordinates down. */}
       <section className="bg-paper py-16 md:py-32">
         <div className="mx-auto flex max-w-[440px] flex-col items-center px-6 text-center md:hidden">
-          <h2 className="font-slogan text-2xl font-extrabold">PINCH CONTROL</h2>
+          <h2 className="font-slogan text-2xl font-bold">PINCH CONTROL</h2>
           <p className="mt-4 font-kr text-sm leading-relaxed text-concrete">
             엄지와 손끝이 만나는 순간, 움직이는 사운드
           </p>
-          <p className="mt-2 font-kr text-xs leading-relaxed text-concrete/80">
-            손목 피부로 전해지는 미세한 힘줌의 텝, 그리고 손끝을 맞대는 핀치(Pinch) 제스처
-            하나로 기본 플레이부터 화려한 이펙트 믹싱까지 완벽하게 지휘하세요.
+          <p className="mt-2 font-kr text-[11px] leading-relaxed text-concrete/80">
+            <span className="block">손목 피부로 전해지는 미세한 힘줌의 텝, 그리고 손끝을 맞대는 핀치(Pinch) 제스처 하나로</span>
+            <span className="block">기본 플레이부터 화려한 이펙트 믹싱까지 완벽하게 지휘하세요.</span>
           </p>
           <button
             type="button"
@@ -298,13 +298,13 @@ export default function Shop() {
             className="absolute left-1/2 flex w-full max-w-[440px] -translate-x-1/2 -translate-y-1/2 flex-col items-center text-center"
             style={{ top: 200 }}
           >
-            <h2 className="font-slogan text-2xl font-extrabold md:text-4xl">PINCH CONTROL</h2>
+            <h2 className="font-slogan text-2xl font-bold md:text-4xl">PINCH CONTROL</h2>
             <p className="mt-4 font-kr text-sm leading-relaxed text-concrete md:text-base">
               엄지와 손끝이 만나는 순간, 움직이는 사운드
             </p>
-            <p className="mt-2 font-kr text-xs leading-relaxed text-concrete/80 md:text-sm">
-              손목 피부로 전해지는 미세한 힘줌의 텝, 그리고 손끝을 맞대는 핀치(Pinch) 제스처
-              하나로 기본 플레이부터 화려한 이펙트 믹싱까지 완벽하게 지휘하세요.
+            <p className="mt-2 font-kr text-[11px] leading-relaxed text-concrete/80 md:text-xs">
+              <span className="block">손목 피부로 전해지는 미세한 힘줌의 텝, 그리고 손끝을 맞대는 핀치(Pinch) 제스처 하나로</span>
+              <span className="block">기본 플레이부터 화려한 이펙트 믹싱까지 완벽하게 지휘하세요.</span>
             </p>
             <button
               type="button"

@@ -32,26 +32,32 @@ const accessoryFeatures = [
     src: '/fit/fit-1.jpg',
     alt: 'TACT cuff detail, haptic interface placeholder shot',
     title: 'Haptic Sound Interface',
-    body: '손끝에 전해지는 미세한 진동 반응을 통해 음악의 속도와 이펙트를 직관적으로 제어할 수 있습니다.',
+    bodyLines: ['손끝에 전해지는 미세한 진동 반응을 통해', '음악의 속도와 이펙트를 직관적으로 제어할 수 있습니다.'],
   },
   {
     src: '/fit/fit-2.png',
     alt: 'TACT cuff detail, charging station placeholder shot',
     title: 'Custom Charging Station',
-    body: '거치하는 순간 하나의 인테리어 피스가 되는 TACT 전용 충전 스테이션. 마그네틱 도킹 시스템으로 가볍게 올려두는 것만으로 빠르고 안정적인 충전을 지원합니다.',
+    bodyLines: [
+      '거치하는 순간 하나의 인테리어 피스가 되는 TACT 전용 충전 스테이션.',
+      '마그네틱 도킹 시스템으로 가볍게 올려두는 것만으로 빠르고 안정적인 충전을 지원합니다.',
+    ],
     tall: true,
   },
   {
     src: '/fit/fit-3.jpg',
     alt: 'TACT cuff detail, chrome finish placeholder shot',
     title: 'Metallic Chrome Finish',
-    body: '스크래치에 강한 내구성과 은은한 광택으로 웨어러블 쥬얼리 특유의 감각적인 룩을 완성합니다.',
+    bodyLines: ['스크래치에 강한 내구성과 은은한 광택으로', '웨어러블 쥬얼리 특유의 감각적인 룩을 완성합니다.'],
   },
   {
     src: '/fit/fit-4.png',
     alt: 'TACT cuff detail, organic fluid design placeholder shot',
     title: 'Organic Fluid Design',
-    body: '인체공학적으로 재해석한 매끈한 곡선 라인. 금속이 흐르는 듯한 유기적 형태는 착용감을 최우선으로 고려하면서도, 손목 위에서 독보적인 오브제로서의 존재감을 드러냅니다.',
+    bodyLines: [
+      '인체공학적으로 재해석한 매끈한 곡선 라인. 금속이 흐르는 듯한 유기적 형태는 착용감을 최우선으로 고려하면서도,',
+      '손목 위에서 독보적인 오브제로서의 존재감을 드러냅니다.',
+    ],
     wide: true,
   },
 ]
@@ -167,7 +173,7 @@ export default function Home() {
           {/* font-slogan (Syne) is a one-off here — the reference headline
               wants a distinct geometric display face, not the site's usual
               Archivo Black. */}
-          <h2 className="mt-4 font-slogan text-4xl font-extrabold leading-[0.95] md:text-6xl">
+          <h2 className="mt-4 font-slogan text-4xl font-bold leading-[0.95] md:text-6xl">
             <ScrollRevealWords text="Style Your Sound" />
           </h2>
           <p className="mt-3 font-sans text-lg text-bone md:text-xl">
@@ -233,7 +239,7 @@ export default function Home() {
               <p className="font-mono text-xs uppercase tracking-widest text-acid">
                 Gesture Control Technology
               </p>
-              <h3 className="mt-3 font-slogan text-2xl font-extrabold leading-[1.05] md:text-5xl">
+              <h3 className="mt-3 font-slogan text-2xl font-bold leading-[1.05] md:text-5xl">
                 <ScrollRevealWords text="Just a Touch of Fingers" />
               </h3>
               <p className="mt-7 font-kr text-xs leading-relaxed text-concrete md:mt-9 md:text-base">
@@ -259,7 +265,7 @@ export default function Home() {
 
           <div className="mx-auto max-w-[900px] text-center">
             <p className="font-mono text-xs uppercase tracking-widest text-acid">Hardware Details</p>
-            <h2 className="mt-4 font-slogan text-4xl font-extrabold leading-[0.95] md:text-6xl">
+            <h2 className="mt-4 font-slogan text-4xl font-bold leading-[0.95] md:text-6xl">
               <ScrollRevealWords text="Complete Your Outfit" />
             </h2>
             <p className="mx-auto mt-6 max-w-2xl font-kr text-sm leading-relaxed text-concrete md:text-base">
@@ -294,8 +300,12 @@ export default function Home() {
                   <p className="font-display text-lg leading-[1.1] text-paper md:text-xl">
                     {feature.title}
                   </p>
-                  <p className="mt-2 max-w-[85%] font-kr text-[11px] leading-relaxed text-paper/85 md:text-xs">
-                    {feature.body}
+                  <p className="mt-2 max-w-[85%] font-kr text-[10px] leading-relaxed text-paper/85 md:text-[11px]">
+                    {feature.bodyLines.map((line) => (
+                      <span key={line} className="block">
+                        {line}
+                      </span>
+                    ))}
                   </p>
                 </div>
               </div>
