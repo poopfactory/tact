@@ -195,6 +195,17 @@ function MobileNav() {
   // closes it directly through the onClick below).
   useEffect(() => setOpen(false), [pathname])
 
+  // Scrolling the page while the menu is open reads as "done with the
+  // menu" on mobile (there's no click-outside-to-dismiss without a
+  // backdrop) — close it as soon as the page actually moves, not on
+  // every scroll event regardless of open state.
+  useEffect(() => {
+    if (!open) return
+    const handleScroll = () => setOpen(false)
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [open])
+
   return (
     <div className="relative md:hidden">
       <button
