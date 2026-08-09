@@ -14,6 +14,8 @@ const galleryItems = [
   { id: 'photo' as const, src: '/products/shop-4.png', alt: 'TACT cuff, clasp detail' },
 ]
 
+const BASE_PRICE = 799000
+
 const finishes = [
   { name: 'Chrome', price: 0 },
   { name: 'Gunmetal', price: 20000 },
@@ -97,7 +99,7 @@ export default function Shop() {
   const [size, setSize] = useState(sizes[1].name)
   const [activeIdx, setActiveIdx] = useState(0)
   const active = galleryItems[activeIdx]
-  const total = finishes.find((f) => f.name === finish)?.price ?? 0
+  const total = BASE_PRICE + (finishes.find((f) => f.name === finish)?.price ?? 0)
 
   const goPrev = () => setActiveIdx((i) => (i - 1 + galleryItems.length) % galleryItems.length)
   const goNext = () => setActiveIdx((i) => (i + 1) % galleryItems.length)
