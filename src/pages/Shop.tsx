@@ -42,17 +42,17 @@ const specRows = [
 // live control surface.
 const pinchLeft = [
   { label: 'Custom', finger: 'Pinky', top: 60 },
-  { label: 'Volume Down', finger: 'Ring', top: 152, inner: true },
-  { label: 'Volume Up', finger: 'Middle', top: 244, inner: true },
-  { label: 'Play Pause', finger: 'Index', top: 336, inner: true },
-  { label: 'Trigger', finger: 'Thumb', top: 444, active: true },
+  { label: 'Volume Down', finger: 'Ring', top: 182, inner: true },
+  { label: 'Volume Up', finger: 'Middle', top: 304, inner: true },
+  { label: 'Play Pause', finger: 'Index', top: 426, inner: true },
+  { label: 'Trigger', finger: 'Thumb', top: 560, active: true },
 ]
 const pinchRight = [
   { label: 'Pass Filter', finger: 'Pinky', top: 60 },
-  { label: 'Distortion', finger: 'Ring', top: 152, inner: true },
-  { label: 'Flanger', finger: 'Middle', top: 244, inner: true },
-  { label: 'Phaser', finger: 'Index', top: 336, inner: true },
-  { label: 'Trigger', finger: 'Thumb', top: 444, active: true },
+  { label: 'Distortion', finger: 'Ring', top: 182, inner: true },
+  { label: 'Flanger', finger: 'Middle', top: 304, inner: true },
+  { label: 'Phaser', finger: 'Index', top: 426, inner: true },
+  { label: 'Trigger', finger: 'Thumb', top: 560, active: true },
 ]
 
 function PinchBubble({
@@ -273,7 +273,7 @@ export default function Shop() {
 
         {/* Desktop diagram — mirrored columns of finger bubbles flanking
             the pitch, positioned with hand-placed coordinates. */}
-        <div className="relative mx-auto hidden h-[560px] max-w-[1400px] px-6 md:block md:px-10">
+        <div className="relative mx-auto hidden h-[680px] max-w-[1400px] px-6 md:block md:px-10">
           {pinchLeft.map((b) => (
             <PinchBubble key={b.label} {...b} side="left" />
           ))}
@@ -283,20 +283,20 @@ export default function Shop() {
 
           <div
             className="absolute font-display text-sm uppercase leading-tight md:text-base"
-            style={{ left: '11.6%', top: 288, transform: 'translate(-50%, -50%)' }}
+            style={{ left: '11.6%', top: 316, transform: 'translate(-50%, -50%)' }}
           >
             Basic<br />Player<br />(L)
           </div>
           <div
             className="absolute text-right font-display text-sm uppercase leading-tight md:text-base"
-            style={{ left: '88.4%', top: 288, transform: 'translate(-50%, -50%)' }}
+            style={{ left: '88.4%', top: 316, transform: 'translate(-50%, -50%)' }}
           >
             Effect<br />Mixing<br />(R)
           </div>
 
           <div
             className="absolute left-1/2 flex w-[36%] max-w-[420px] -translate-x-1/2 -translate-y-1/2 flex-col items-center text-center"
-            style={{ top: 252 }}
+            style={{ top: 316 }}
           >
             <h2 className="font-slogan text-2xl font-medium md:text-4xl">PINCH CONTROL</h2>
             <p className="mt-4 font-kr text-sm leading-relaxed text-concrete md:text-base">
