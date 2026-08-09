@@ -1,6 +1,6 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
-import { motion, useScroll, useTransform } from 'framer-motion'
+import { AnimatePresence, motion, useScroll, useTransform } from 'framer-motion'
 import ScrollProgressRail from './ScrollProgressRail'
 
 // Same basis as the scroll-progress rail (right-center gauge) — the header
@@ -187,14 +187,38 @@ export default function Layout() {
 }
 
 function MobileNav() {
+  const { pathname } = useLocation()
+  const [open, setOpen] = useState(false)
+
+  // Route changes should always close the menu, even if it was opened via
+  // browser back/forward rather than a NavLinks click (which already
+  // closes it directly through the onClick below).
+  useEffect(() => setOpen(false), [pathname])
+
   return (
-    <details className="relative md:hidden">
-      <summary className="list-none cursor-pointer select-none rounded-full border border-steel-2 px-3 py-2 font-sans text-xs uppercase tracking-widest">
-        Menu
-      </summary>
-      <div className="absolute right-0 top-12 z-50 flex w-56 flex-col gap-4 border-2 border-bone bg-gunmetal p-6 shadow-hard">
-        <NavLinks />
-      </div>
-    </details>
+    <div className="relative md:hidden">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        className="rounded-full border border-steel-2 bg-paper-2 px-3 py-2 font-sans text-xs uppercase tracking-widest text-bone transition-colors hover:border-acid hover:text-acid"
+      >
+        {open ? 'Close' : 'Menu'}
+      </button>
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: -16, scaleY: 0.9 }}
+            animate={{ opacity: 1, y: 0, scaleY: 1 }}
+            exit={{ opacity: 0, y: -16, scaleY: 0.9 }}
+            transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
+            style={{ transformOrigin: 'top' }}
+            className="absolute right-0 top-12 z-50 flex w-56 flex-col gap-4 rounded-[20px] border border-steel-2 bg-white/90 p-6 shadow-[0_12px_32px_rgba(10,10,11,0.16)] backdrop-blur-xl"
+          >
+            <NavLinks onClick={() => setOpen(false)} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   )
 }
