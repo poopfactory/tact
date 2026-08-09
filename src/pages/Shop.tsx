@@ -78,7 +78,7 @@ function PinchBubble({
       style={{ left: `${inner ? innerPct : outerPct}%`, top }}
     >
       <div
-        className={`blob-card flex items-center justify-center border px-3 text-center font-sans leading-tight ${
+        className={`flex items-center justify-center rounded-full border px-3 text-center font-sans leading-tight ${
           active
             ? 'h-24 w-24 border-acid bg-acid text-void md:h-28 md:w-28'
             : 'h-16 w-16 border-steel-2 bg-paper text-bone md:h-20 md:w-20'
@@ -255,7 +255,7 @@ export default function Shop() {
                 {col.items.map((b) => (
                   <div key={b.label} className="flex flex-col items-center gap-2">
                     <div
-                      className={`blob-card flex items-center justify-center border px-3 text-center font-sans text-[10px] leading-tight ${
+                      className={`flex items-center justify-center rounded-full border px-3 text-center font-sans text-[10px] leading-tight ${
                         b.active ? 'h-24 w-24 border-acid bg-acid text-void' : 'h-16 w-16 border-steel-2 bg-paper text-bone'
                       }`}
                     >
@@ -295,7 +295,7 @@ export default function Shop() {
           </div>
 
           <div
-            className="absolute left-1/2 flex w-full max-w-[440px] -translate-x-1/2 -translate-y-1/2 flex-col items-center text-center"
+            className="absolute left-1/2 flex w-[36%] max-w-[420px] -translate-x-1/2 -translate-y-1/2 flex-col items-center text-center"
             style={{ top: 252 }}
           >
             <h2 className="font-slogan text-2xl font-medium md:text-4xl">PINCH CONTROL</h2>
