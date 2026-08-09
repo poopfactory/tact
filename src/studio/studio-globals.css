@@ -34,9 +34,9 @@
   --led-ok: var(--accent);
   --led-ok-glow: var(--accent-glow);
 
-  --font-display: 'Space Grotesk', system-ui, sans-serif;
-  --sans: 'Space Grotesk', system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: 'JetBrains Mono', ui-monospace, 'Cascadia Code', Consolas, monospace;
+  --font-display: 'Pretendard', system-ui, sans-serif;
+  --sans: 'Pretendard', system-ui, 'Segoe UI', Roboto, sans-serif;
+  --mono: 'Pretendard', ui-monospace, 'Cascadia Code', Consolas, monospace;
 
   position: relative;
   isolation: isolate;

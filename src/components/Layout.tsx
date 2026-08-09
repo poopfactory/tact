@@ -189,7 +189,7 @@ export default function Layout() {
 function MobileNav() {
   return (
     <details className="relative md:hidden">
-      <summary className="list-none cursor-pointer select-none border-2 border-bone px-3 py-2 font-mono text-xs uppercase tracking-widest">
+      <summary className="list-none cursor-pointer select-none rounded-full border border-steel-2 px-3 py-2 font-sans text-xs uppercase tracking-widest">
         Menu
       </summary>
       <div className="absolute right-0 top-12 z-50 flex w-56 flex-col gap-4 border-2 border-bone bg-gunmetal p-6 shadow-hard">

@@ -32,7 +32,7 @@ export default function ScrollProgressRail() {
         />
       </div>
 
-      <motion.span className="font-mono text-[10px] font-bold tracking-widest text-acid">
+      <motion.span className="font-sans text-[10px] tracking-widest text-acid">
         {percentLabel}
       </motion.span>
     </div>

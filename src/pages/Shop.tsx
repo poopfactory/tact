@@ -41,18 +41,18 @@ const specRows = [
 // RightEffectPanel.tsx), laid out here as a static diagram rather than a
 // live control surface.
 const pinchLeft = [
-  { label: 'Custom', finger: 'Pinky', top: 84 },
-  { label: 'Volume Down', finger: 'Ring', top: 138, inner: true },
-  { label: 'Volume Up', finger: 'Middle', top: 241, inner: true },
-  { label: 'Play Pause', finger: 'Index', top: 345, inner: true },
-  { label: 'Trigger', finger: 'Thumb', top: 398, active: true },
+  { label: 'Custom', finger: 'Pinky', top: 60 },
+  { label: 'Volume Down', finger: 'Ring', top: 152, inner: true },
+  { label: 'Volume Up', finger: 'Middle', top: 244, inner: true },
+  { label: 'Play Pause', finger: 'Index', top: 336, inner: true },
+  { label: 'Trigger', finger: 'Thumb', top: 444, active: true },
 ]
 const pinchRight = [
-  { label: 'Pitch', finger: 'Pinky', top: 84 },
-  { label: 'Pass Filter', finger: 'Ring', top: 138, inner: true },
-  { label: 'Delay', finger: 'Middle', top: 241, inner: true },
-  { label: 'Reverb', finger: 'Index', top: 345, inner: true },
-  { label: 'Trigger', finger: 'Thumb', top: 398, active: true },
+  { label: 'Pitch', finger: 'Pinky', top: 60 },
+  { label: 'Pass Filter', finger: 'Ring', top: 152, inner: true },
+  { label: 'Delay', finger: 'Middle', top: 244, inner: true },
+  { label: 'Reverb', finger: 'Index', top: 336, inner: true },
+  { label: 'Trigger', finger: 'Thumb', top: 444, active: true },
 ]
 
 function PinchBubble({
@@ -78,11 +78,11 @@ function PinchBubble({
       style={{ left: `${inner ? innerPct : outerPct}%`, top }}
     >
       <div
-        className={`flex items-center justify-center rounded-full border text-center font-sans font-semibold leading-tight ${
+        className={`flex items-center justify-center rounded-full border px-3 text-center font-sans leading-tight ${
           active
-            ? 'h-20 w-20 border-acid bg-acid text-void md:h-24 md:w-24'
-            : 'h-14 w-14 border-steel-2 bg-paper text-bone md:h-16 md:w-16'
-        } text-[11px] md:text-xs`}
+            ? 'h-24 w-24 border-acid bg-acid text-void md:h-28 md:w-28'
+            : 'h-16 w-16 border-steel-2 bg-paper text-bone md:h-20 md:w-20'
+        } text-[10px] md:text-[11px]`}
       >
         {label}
       </div>
@@ -230,7 +230,7 @@ export default function Shop() {
           scale the same coordinates down. */}
       <section className="bg-paper py-16 md:py-32">
         <div className="mx-auto flex max-w-[440px] flex-col items-center px-6 text-center md:hidden">
-          <h2 className="font-slogan text-2xl font-bold">PINCH CONTROL</h2>
+          <h2 className="font-slogan text-2xl font-medium">PINCH CONTROL</h2>
           <p className="mt-4 font-kr text-sm leading-relaxed text-concrete">
             엄지와 손끝이 만나는 순간, 움직이는 사운드
           </p>
@@ -255,8 +255,8 @@ export default function Shop() {
                 {col.items.map((b) => (
                   <div key={b.label} className="flex flex-col items-center gap-2">
                     <div
-                      className={`flex items-center justify-center rounded-full border text-center font-sans text-[11px] font-semibold leading-tight ${
-                        b.active ? 'h-20 w-20 border-acid bg-acid text-void' : 'h-14 w-14 border-steel-2 bg-paper text-bone'
+                      className={`flex items-center justify-center rounded-full border px-3 text-center font-sans text-[10px] leading-tight ${
+                        b.active ? 'h-24 w-24 border-acid bg-acid text-void' : 'h-16 w-16 border-steel-2 bg-paper text-bone'
                       }`}
                     >
                       {b.label}
@@ -273,7 +273,7 @@ export default function Shop() {
 
         {/* Desktop diagram — mirrored columns of finger bubbles flanking
             the pitch, positioned with hand-placed coordinates. */}
-        <div className="relative mx-auto hidden h-[460px] max-w-[1400px] px-6 md:block md:px-10">
+        <div className="relative mx-auto hidden h-[560px] max-w-[1400px] px-6 md:block md:px-10">
           {pinchLeft.map((b) => (
             <PinchBubble key={b.label} {...b} side="left" />
           ))}
@@ -283,22 +283,22 @@ export default function Shop() {
 
           <div
             className="absolute max-w-[140px] font-display text-sm uppercase leading-tight md:text-base"
-            style={{ left: '11.6%', top: 246, transform: 'translate(-50%, -50%)' }}
+            style={{ left: '11.6%', top: 288, transform: 'translate(-50%, -50%)' }}
           >
             Basic Player (L)
           </div>
           <div
             className="absolute max-w-[140px] text-right font-display text-sm uppercase leading-tight md:text-base"
-            style={{ left: '88.4%', top: 246, transform: 'translate(-50%, -50%)' }}
+            style={{ left: '88.4%', top: 288, transform: 'translate(-50%, -50%)' }}
           >
             Effect Mixing (R)
           </div>
 
           <div
             className="absolute left-1/2 flex w-full max-w-[440px] -translate-x-1/2 -translate-y-1/2 flex-col items-center text-center"
-            style={{ top: 200 }}
+            style={{ top: 252 }}
           >
-            <h2 className="font-slogan text-2xl font-bold md:text-4xl">PINCH CONTROL</h2>
+            <h2 className="font-slogan text-2xl font-medium md:text-4xl">PINCH CONTROL</h2>
             <p className="mt-4 font-kr text-sm leading-relaxed text-concrete md:text-base">
               엄지와 손끝이 만나는 순간, 움직이는 사운드
             </p>
@@ -326,14 +326,14 @@ export default function Shop() {
           <h2 className="mt-2 font-display text-3xl leading-tight md:text-5xl">NO BOREDOM</h2>
         </div>
         <div className="mx-auto max-w-[1000px] px-6 pb-20 md:px-10">
-          <div className="divide-y-2 divide-void border-y-2 border-void font-mono text-sm">
+          <div className="divide-y-2 divide-void border-y-2 border-void text-sm">
             {specRows.map(([label, value]) => (
               <div
                 key={label}
                 className="flex flex-col justify-between gap-1 py-4 sm:flex-row sm:items-center"
               >
-                <span className="font-bold uppercase tracking-widest">{label}</span>
-                <span className="text-void/70">{value}</span>
+                <span className="font-slogan font-medium uppercase tracking-widest">{label}</span>
+                <span className="font-sans text-void/70">{value}</span>
               </div>
             ))}
           </div>

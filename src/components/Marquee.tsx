@@ -22,7 +22,7 @@ export default function Marquee({ items, className = '' }: MarqueeProps) {
         {repeated.map((item, i) => (
           <span
             key={i}
-            className="mx-4 flex items-center font-mono text-sm font-bold tracking-widest text-void uppercase shrink-0"
+            className="mx-4 flex items-center font-sans text-sm tracking-widest text-void uppercase shrink-0"
           >
             {item}
           </span>

@@ -68,14 +68,14 @@ export default function BrandStory() {
           same narrow reading column throughout. */}
       <section className="bg-paper">
         <div className="mx-auto max-w-[900px] px-6 pb-24 pt-20 text-center md:px-10 md:pt-28">
-          <p className="font-mono text-xs uppercase tracking-widest text-acid">About Us</p>
+          <p className="font-sans text-xs font-medium uppercase tracking-widest text-black/50">About Us</p>
           <h1 className="mt-4 font-slogan text-4xl font-bold leading-[1.05] md:text-6xl">
             <ScrollRevealWords text="Sound is Fashion" />
             <br />
             <ScrollRevealWords text="Motion is Rhythm" />
           </h1>
 
-          <h2 className="mt-24 font-slogan text-lg font-bold uppercase tracking-wide md:mt-32 md:text-xl">
+          <h2 className="mt-24 font-slogan text-lg font-medium uppercase tracking-wide md:mt-32 md:text-xl">
             Name Origin
           </h2>
           <p className="mx-auto mt-6 max-w-2xl font-kr text-sm leading-relaxed text-concrete md:text-base">
@@ -92,7 +92,7 @@ export default function BrandStory() {
 
           <div className="mx-auto mt-16 h-16 w-px bg-steel-2 md:mt-20" />
 
-          <h2 className="mt-16 font-slogan text-lg font-bold uppercase tracking-wide md:mt-20 md:text-xl">
+          <h2 className="mt-16 font-slogan text-lg font-medium uppercase tracking-wide md:mt-20 md:text-xl">
             Focus On( &nbsp; )
           </h2>
           <p className="mx-auto mt-6 max-w-2xl font-kr text-sm leading-relaxed text-concrete md:text-base">
@@ -129,7 +129,7 @@ export default function BrandStory() {
           restated here as blob-shaped cards. */}
       <section className="bg-paper">
         <div className="mx-auto max-w-[900px] px-6 pt-20 text-center md:px-10 md:pt-28">
-          <h2 className="font-slogan text-2xl font-bold md:text-4xl">Our Belief</h2>
+          <h2 className="font-slogan text-2xl font-medium md:text-4xl">Our Belief</h2>
           <p className="mx-auto mt-5 max-w-2xl font-kr text-sm leading-relaxed text-concrete md:text-base">
             <span className="block">
               TACT는 음악을 그저 '듣는 사람'에 머물던 당신을, 분위기를 주도하는 '플레이어'로 바꿀 수 있다고
@@ -160,7 +160,7 @@ export default function BrandStory() {
       {/* CLOSING SLOGAN — full-bleed acid band, script wordmark treatment. */}
       <section className="bg-acid">
         <div className="mx-auto max-w-[900px] px-6 py-20 text-center md:px-10 md:py-28">
-          <p className="font-slogan text-3xl font-bold text-paper md:text-5xl">{SITE_SLOGAN}</p>
+          <p className="font-slogan text-3xl font-medium text-paper md:text-5xl">{SITE_SLOGAN}</p>
         </div>
       </section>
     </>

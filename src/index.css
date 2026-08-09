@@ -1,19 +1,18 @@
 @import "tailwindcss";
 
 @theme {
-  --font-display: "Archivo Black", "Space Grotesk", sans-serif;
-  --font-sans: "Space Grotesk", system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, monospace;
-  --font-script: "Instrument Serif", serif;
-  /* The main slogan headline ("Style Your Sound") — Archivo Black (the
-     site's usual display face) reads too heavy/blocky for that line, so it
-     gets its own token instead of overriding --font-display sitewide. */
-  --font-slogan: "Syne", "Space Grotesk", sans-serif;
-  /* Space Grotesk/Archivo Black don't cover Hangul — Korean copy (the
-     slogan section's body paragraph, lookbook hover captions) needs an
-     explicit Korean-native face rather than silently falling back to
-     whatever system font the browser picks. */
-  --font-kr: "Noto Sans KR", "Space Grotesk", sans-serif;
+  /* Sitewide type is Pretendard end to end (display/body/mono-label/script
+     all point at the same family now — the per-role tokens are kept only
+     so component classNames don't need touching) at Regular weight by
+     default, with Syne reserved for the handful of display headlines
+     called out per-component. Pretendard covers Hangul natively, so
+     --font-kr no longer needs a separate Korean-specific face. */
+  --font-display: "Pretendard", system-ui, sans-serif;
+  --font-sans: "Pretendard", system-ui, sans-serif;
+  --font-mono: "Pretendard", system-ui, sans-serif;
+  --font-script: "Pretendard", system-ui, sans-serif;
+  --font-slogan: "Syne", "Pretendard", sans-serif;
+  --font-kr: "Pretendard", system-ui, sans-serif;
 
   /* Light industrial base. `void` and `bone` keep their original roles —
      void is hard ink (borders/shadows/text-on-neon), bone is the default

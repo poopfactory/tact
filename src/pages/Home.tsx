@@ -87,8 +87,8 @@ function LookbookVisual({
           value sits in acid green with a small Korean line underneath,
           both fading in on hover instead of the block sliding up. */}
       <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-void/90 via-void/50 to-transparent px-5 pb-5 pt-16 opacity-0 transition-opacity duration-500 ease-out group-hover:opacity-100">
-        <span className="font-display text-xl font-bold text-acid md:text-2xl">{value}</span>
-        <p className="mt-2 font-kr text-[11px] leading-relaxed text-paper/85 md:mt-3 md:text-xs">
+        <span className="block font-slogan text-xl font-medium leading-tight text-acid md:text-2xl">{value}</span>
+        <p className="mt-1 font-kr text-[11px] leading-relaxed text-paper/85 md:mt-1.5 md:text-xs">
           {description}
         </p>
       </div>
@@ -167,7 +167,7 @@ export default function Home() {
           image and slides the matching core value up from the bottom. */}
       <section id="lookbook" className="scroll-mt-28 bg-paper">
         <div className="mx-auto max-w-[900px] px-6 pt-20 pb-20 text-center md:px-10 md:pt-28 md:pb-24">
-          <p className="font-mono text-xs uppercase tracking-widest text-acid">
+          <p className="font-sans text-xs font-medium uppercase tracking-widest text-black/50">
             About Us
           </p>
           {/* font-slogan (Syne) is a one-off here — the reference headline
@@ -236,10 +236,10 @@ export default function Home() {
               className="absolute inset-0 h-full w-full object-cover object-left"
             />
             <div className="absolute inset-y-0 right-0 flex w-[55%] flex-col justify-center px-6 md:w-[42%] md:px-12 lg:pr-24">
-              <p className="font-mono text-xs uppercase tracking-widest text-acid">
+              <p className="font-sans text-xs font-medium uppercase tracking-widest text-black/50">
                 Gesture Control Technology
               </p>
-              <h3 className="mt-3 font-slogan text-2xl font-bold leading-[1.05] md:text-5xl">
+              <h3 className="mt-3 font-slogan text-2xl font-medium leading-[1.05] md:text-5xl">
                 <ScrollRevealWords text="Just a Touch of Fingers" />
               </h3>
               <p className="mt-7 font-kr text-xs leading-relaxed text-concrete md:mt-9 md:text-base">
@@ -264,8 +264,8 @@ export default function Home() {
           </div>
 
           <div className="mx-auto max-w-[900px] text-center">
-            <p className="font-mono text-xs uppercase tracking-widest text-acid">Hardware Details</p>
-            <h2 className="mt-4 font-slogan text-4xl font-bold leading-[0.95] md:text-6xl">
+            <p className="font-sans text-xs font-medium uppercase tracking-widest text-black/50">Hardware Details</p>
+            <h2 className="mt-4 font-slogan text-4xl font-medium leading-[0.95] md:text-6xl">
               <ScrollRevealWords text="Complete Your Outfit" />
             </h2>
             <p className="mx-auto mt-6 max-w-2xl font-kr text-sm leading-relaxed text-concrete md:text-base">
@@ -297,7 +297,7 @@ export default function Home() {
                     feature.wide ? 'items-end text-right' : 'items-start text-left'
                   }`}
                 >
-                  <p className="font-display text-lg leading-[1.1] text-paper md:text-xl">
+                  <p className="font-slogan text-lg font-medium leading-[1.1] text-paper md:text-xl">
                     {feature.title}
                   </p>
                   <p className="mt-2 max-w-[85%] font-kr text-[10px] leading-relaxed text-paper/85 md:text-[11px]">
