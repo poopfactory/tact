@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { ShopCuffModel } from '../components/CuffModel'
 import Marquee from '../components/Marquee'
 import { ShimmerButton } from '@/components/ui/shimmer-button'
+import { ScrollRevealWords } from '../components/ScrollRevealWords'
+import { RevealOnScroll } from '../components/RevealOnScroll'
 
 // '3d' is the interactive drag-to-rotate model; the rest are the shot
 // product photos, in display order.
@@ -111,7 +113,9 @@ export default function Shop() {
       <section className="bg-paper">
         <div className="mx-auto max-w-[1400px] px-6 pt-16 md:px-10">
           <div className="flex flex-wrap items-center justify-between gap-4">
-            <h1 className="font-display text-2xl tracking-tight md:text-3xl">BUY TO TACT</h1>
+            <h1 className="font-display text-2xl tracking-tight md:text-3xl">
+              <ScrollRevealWords text="BUY TO TACT" />
+            </h1>
             <button
               type="button"
               onClick={() => navigate('/studio')}
@@ -123,7 +127,7 @@ export default function Shop() {
 
           <div className="mt-8 grid gap-10 pb-16 md:grid-cols-2 md:gap-16">
             {/* GALLERY — single frame + prev/dot/next controls */}
-            <div>
+            <RevealOnScroll>
               <div className="relative flex aspect-square items-center justify-center overflow-hidden rounded-[28px] bg-paper-2">
                 {active.id === '3d' ? (
                   <ShopCuffModel className="h-full w-full" />
@@ -163,11 +167,13 @@ export default function Shop() {
                   ›
                 </button>
               </div>
-            </div>
+            </RevealOnScroll>
 
             {/* CONFIGURE */}
-            <div>
-              <p className="font-mono text-xs uppercase tracking-widest text-concrete">Finish</p>
+            <RevealOnScroll delay={0.12}>
+              <p className="font-mono text-xs uppercase tracking-widest text-concrete">
+                <ScrollRevealWords text="Finish" />
+              </p>
               <div className="mt-3 flex flex-col gap-3">
                 {finishes.map((f) => (
                   <button
@@ -188,7 +194,9 @@ export default function Shop() {
                 ))}
               </div>
 
-              <p className="mt-8 font-mono text-xs uppercase tracking-widest text-concrete">Size</p>
+              <p className="mt-8 font-mono text-xs uppercase tracking-widest text-concrete">
+                <ScrollRevealWords text="Size" />
+              </p>
               <div className="mt-3 flex flex-col gap-3">
                 {sizes.map((s) => (
                   <button
@@ -218,7 +226,7 @@ export default function Shop() {
                   Buy
                 </ShimmerButton>
               </div>
-            </div>
+            </RevealOnScroll>
           </div>
         </div>
       </section>
@@ -232,13 +240,19 @@ export default function Shop() {
           scale the same coordinates down. */}
       <section className="bg-paper py-16 md:py-32">
         <div className="mx-auto flex max-w-[440px] flex-col items-center px-6 text-center md:hidden">
-          <h2 className="font-slogan text-2xl font-medium">PINCH CONTROL</h2>
+          <h2 className="font-slogan text-2xl font-medium">
+            <ScrollRevealWords text="PINCH CONTROL" />
+          </h2>
           <p className="mt-4 font-kr text-sm leading-relaxed text-concrete">
-            엄지와 손끝이 만나는 순간, 움직이는 사운드
+            <ScrollRevealWords text="엄지와 손끝이 만나는 순간, 움직이는 사운드" />
           </p>
           <p className="mt-2 font-kr text-[11px] leading-relaxed text-concrete/80">
-            <span className="block">손목 피부로 전해지는 미세한 힘줌의 텝, 그리고 손끝을 맞대는 핀치(Pinch) 제스처 하나로</span>
-            <span className="block">기본 플레이부터 화려한 이펙트 믹싱까지 완벽하게 지휘하세요.</span>
+            <span className="block">
+              <ScrollRevealWords text="손목 피부로 전해지는 미세한 힘줌의 텝, 그리고 손끝을 맞대는 핀치(Pinch) 제스처 하나로" />
+            </span>
+            <span className="block">
+              <ScrollRevealWords text="기본 플레이부터 화려한 이펙트 믹싱까지 완벽하게 지휘하세요." />
+            </span>
           </p>
           <button
             type="button"
@@ -250,8 +264,8 @@ export default function Shop() {
           {[
             { title: 'Basic Player (L)', items: pinchLeft },
             { title: 'Effect Mixing (R)', items: pinchRight },
-          ].map((col) => (
-            <div key={col.title} className="mt-12 w-full">
+          ].map((col, colIdx) => (
+            <RevealOnScroll key={col.title} delay={colIdx * 0.1} className="mt-12 w-full">
               <p className="font-display text-sm uppercase">{col.title}</p>
               <div className="mt-5 flex flex-wrap justify-center gap-5">
                 {col.items.map((b) => (
@@ -269,13 +283,13 @@ export default function Shop() {
                   </div>
                 ))}
               </div>
-            </div>
+            </RevealOnScroll>
           ))}
         </div>
 
         {/* Desktop diagram — mirrored columns of finger bubbles flanking
             the pitch, positioned with hand-placed coordinates. */}
-        <div className="relative mx-auto hidden h-[680px] max-w-[1400px] px-6 md:block md:px-10">
+        <RevealOnScroll className="relative mx-auto hidden h-[680px] max-w-[1400px] px-6 md:block md:px-10">
           {pinchLeft.map((b) => (
             <PinchBubble key={b.label} {...b} side="left" />
           ))}
@@ -300,13 +314,19 @@ export default function Shop() {
             className="absolute left-1/2 flex w-[36%] max-w-[420px] -translate-x-1/2 -translate-y-1/2 flex-col items-center text-center"
             style={{ top: 316 }}
           >
-            <h2 className="font-slogan text-2xl font-medium md:text-4xl">PINCH CONTROL</h2>
+            <h2 className="font-slogan text-2xl font-medium md:text-4xl">
+              <ScrollRevealWords text="PINCH CONTROL" />
+            </h2>
             <p className="mt-4 font-kr text-sm leading-relaxed text-concrete md:text-base">
-              엄지와 손끝이 만나는 순간, 움직이는 사운드
+              <ScrollRevealWords text="엄지와 손끝이 만나는 순간, 움직이는 사운드" />
             </p>
             <p className="mt-2 font-kr text-[11px] leading-relaxed text-concrete/80 md:text-xs">
-              <span className="block">손목 피부로 전해지는 미세한 힘줌의 텝, 그리고 손끝을 맞대는 핀치(Pinch) 제스처 하나로</span>
-              <span className="block">기본 플레이부터 화려한 이펙트 믹싱까지 완벽하게 지휘하세요.</span>
+              <span className="block">
+                <ScrollRevealWords text="손목 피부로 전해지는 미세한 힘줌의 텝, 그리고 손끝을 맞대는 핀치(Pinch) 제스처 하나로" />
+              </span>
+              <span className="block">
+                <ScrollRevealWords text="기본 플레이부터 화려한 이펙트 믹싱까지 완벽하게 지휘하세요." />
+              </span>
             </p>
             <button
               type="button"
@@ -315,7 +335,7 @@ export default function Shop() {
               App Store
             </button>
           </div>
-        </div>
+        </RevealOnScroll>
       </section>
 
       {/* CLOSING ACID BLOCK — gradient hand-off from the page background,
@@ -323,20 +343,27 @@ export default function Shop() {
       <div className="h-40 bg-gradient-to-b from-paper to-acid md:h-56" />
       <section className="bg-acid text-void">
         <div className="mx-auto max-w-[1000px] px-6 py-16 text-center md:px-10">
-          <h2 className="font-display text-3xl leading-tight md:text-5xl">NO HEAVY GEAR</h2>
-          <h2 className="mt-2 font-display text-3xl leading-tight md:text-5xl">NO BOUNDARIES</h2>
-          <h2 className="mt-2 font-display text-3xl leading-tight md:text-5xl">NO BOREDOM</h2>
+          <h2 className="font-display text-3xl leading-tight md:text-5xl">
+            <ScrollRevealWords text="NO HEAVY GEAR" />
+          </h2>
+          <h2 className="mt-2 font-display text-3xl leading-tight md:text-5xl">
+            <ScrollRevealWords text="NO BOUNDARIES" />
+          </h2>
+          <h2 className="mt-2 font-display text-3xl leading-tight md:text-5xl">
+            <ScrollRevealWords text="NO BOREDOM" />
+          </h2>
         </div>
         <div className="mx-auto max-w-[1000px] px-6 pb-20 md:px-10">
           <div className="divide-y-2 divide-void border-y-2 border-void text-sm">
-            {specRows.map(([label, value]) => (
-              <div
+            {specRows.map(([label, value], i) => (
+              <RevealOnScroll
                 key={label}
+                delay={i * 0.05}
                 className="flex flex-col justify-between gap-1 py-4 sm:flex-row sm:items-center"
               >
                 <span className="font-slogan font-medium uppercase tracking-widest">{label}</span>
                 <span className="font-sans text-void/70">{value}</span>
-              </div>
+              </RevealOnScroll>
             ))}
           </div>
         </div>

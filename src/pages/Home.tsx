@@ -5,6 +5,7 @@ import { HeroCuffModel } from '../components/CuffModel'
 import { InfiniteSlider } from '@/components/ui/infinite-slider-horizontal'
 import { ShimmerButton } from '@/components/ui/shimmer-button'
 import { ScrollRevealWords } from '../components/ScrollRevealWords'
+import { RevealOnScroll } from '../components/RevealOnScroll'
 import { SITE_SLOGAN } from '../lib/brand'
 
 // Six campaign shots, in display order — the hover value/description cycle
@@ -229,7 +230,7 @@ export default function Home() {
               here, it's meant to read as a banner, not a card. The copy
               sits directly over the empty white space on the photo's right
               side rather than in its own column. */}
-          <div className="relative left-1/2 mb-16 aspect-video w-screen -translate-x-1/2 overflow-hidden md:mb-24">
+          <RevealOnScroll className="relative left-1/2 mb-16 aspect-video w-screen -translate-x-1/2 overflow-hidden md:mb-24">
             <img
               src="/fit/fit-gesture.png"
               alt="Hand wearing the TACT cuff, mid gesture"
@@ -261,7 +262,7 @@ export default function Home() {
                 Try In Studio
               </ShimmerButton>
             </div>
-          </div>
+          </RevealOnScroll>
 
           <div className="mx-auto max-w-[900px] text-center">
             <p className="font-sans text-xs font-medium uppercase tracking-widest text-black/50">Hardware Details</p>
@@ -280,9 +281,10 @@ export default function Home() {
               the plain gray placeholder in the reference, since a busy
               photo needs the scrim for the text to stay legible. */}
           <div className="mx-auto mt-12 grid max-w-[1000px] grid-cols-2 gap-4 md:mt-16 md:gap-6">
-            {accessoryFeatures.map((feature) => (
-              <div
+            {accessoryFeatures.map((feature, i) => (
+              <RevealOnScroll
                 key={feature.src}
+                delay={i * 0.08}
                 className={`group relative isolate overflow-hidden rounded-[28px] bg-paper-2 ${
                   feature.tall ? 'row-span-2' : 'h-[220px] md:h-[260px]'
                 } ${feature.wide ? 'col-span-2 h-[220px] md:h-[280px]' : ''}`}
@@ -298,7 +300,7 @@ export default function Home() {
                   }`}
                 >
                   <p className="font-slogan text-lg font-medium leading-[1.1] text-paper md:text-xl">
-                    {feature.title}
+                    <ScrollRevealWords text={feature.title} />
                   </p>
                   <p className="mt-2 max-w-[85%] font-kr text-[10px] leading-relaxed text-paper/85 md:text-[11px]">
                     {feature.bodyLines.map((line) => (
@@ -308,7 +310,7 @@ export default function Home() {
                     ))}
                   </p>
                 </div>
-              </div>
+              </RevealOnScroll>
             ))}
           </div>
 
@@ -316,7 +318,7 @@ export default function Home() {
               background at the bottom, with the headline + two stacked
               buttons sitting in that fade (same full-bleed break-out trick
               as the other banners in this section). */}
-          <div className="relative left-1/2 mt-4 w-screen -translate-x-1/2 overflow-hidden">
+          <RevealOnScroll className="relative left-1/2 mt-4 w-screen -translate-x-1/2 overflow-hidden">
             <img
               src="/fit/fit-cta.png"
               alt="TACT cuff, polished steel product shot"
@@ -324,7 +326,9 @@ export default function Home() {
             />
             <div className="pointer-events-none absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-paper via-paper/80 to-transparent" />
             <div className="relative z-10 -mt-24 flex flex-col items-center gap-5 pb-16 text-center md:-mt-32 md:pb-24">
-              <h3 className="font-display text-2xl md:text-4xl">Ready to Style Your Sound?</h3>
+              <h3 className="font-display text-2xl md:text-4xl">
+                <ScrollRevealWords text="Ready to Style Your Sound?" />
+              </h3>
               <div className="flex flex-col items-center gap-3">
                 <ShimmerButton
                   onClick={() => navigate('/shop')}
@@ -348,7 +352,7 @@ export default function Home() {
                 </ShimmerButton>
               </div>
             </div>
-          </div>
+          </RevealOnScroll>
         </div>
       </section>
     </>
