@@ -48,10 +48,10 @@ const pinchLeft = [
   { label: 'Trigger', finger: 'Thumb', top: 444, active: true },
 ]
 const pinchRight = [
-  { label: 'Pitch', finger: 'Pinky', top: 60 },
-  { label: 'Pass Filter', finger: 'Ring', top: 152, inner: true },
-  { label: 'Delay', finger: 'Middle', top: 244, inner: true },
-  { label: 'Reverb', finger: 'Index', top: 336, inner: true },
+  { label: 'Pass Filter', finger: 'Pinky', top: 60 },
+  { label: 'Distortion', finger: 'Ring', top: 152, inner: true },
+  { label: 'Flanger', finger: 'Middle', top: 244, inner: true },
+  { label: 'Phaser', finger: 'Index', top: 336, inner: true },
   { label: 'Trigger', finger: 'Thumb', top: 444, active: true },
 ]
 
@@ -78,7 +78,7 @@ function PinchBubble({
       style={{ left: `${inner ? innerPct : outerPct}%`, top }}
     >
       <div
-        className={`flex items-center justify-center rounded-full border px-3 text-center font-sans leading-tight ${
+        className={`blob-card flex items-center justify-center border px-3 text-center font-sans leading-tight ${
           active
             ? 'h-24 w-24 border-acid bg-acid text-void md:h-28 md:w-28'
             : 'h-16 w-16 border-steel-2 bg-paper text-bone md:h-20 md:w-20'
@@ -255,7 +255,7 @@ export default function Shop() {
                 {col.items.map((b) => (
                   <div key={b.label} className="flex flex-col items-center gap-2">
                     <div
-                      className={`flex items-center justify-center rounded-full border px-3 text-center font-sans text-[10px] leading-tight ${
+                      className={`blob-card flex items-center justify-center border px-3 text-center font-sans text-[10px] leading-tight ${
                         b.active ? 'h-24 w-24 border-acid bg-acid text-void' : 'h-16 w-16 border-steel-2 bg-paper text-bone'
                       }`}
                     >
@@ -282,16 +282,16 @@ export default function Shop() {
           ))}
 
           <div
-            className="absolute max-w-[140px] font-display text-sm uppercase leading-tight md:text-base"
+            className="absolute font-display text-sm uppercase leading-tight md:text-base"
             style={{ left: '11.6%', top: 288, transform: 'translate(-50%, -50%)' }}
           >
-            Basic Player (L)
+            Basic<br />Player<br />(L)
           </div>
           <div
-            className="absolute max-w-[140px] text-right font-display text-sm uppercase leading-tight md:text-base"
+            className="absolute text-right font-display text-sm uppercase leading-tight md:text-base"
             style={{ left: '88.4%', top: 288, transform: 'translate(-50%, -50%)' }}
           >
-            Effect Mixing (R)
+            Effect<br />Mixing<br />(R)
           </div>
 
           <div
