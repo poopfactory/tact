@@ -18,10 +18,10 @@ export interface ShimmerButtonProps
 const ShimmerButton = React.forwardRef<HTMLButtonElement, ShimmerButtonProps>(
   (
     {
-      // Brand defaults: acid-green fill + a bright chrome shimmer sweep
+      // Brand defaults: acid-green fill + a bright white shimmer sweep
       // (green-on-green wouldn't read), sharp-ish corners to stay in the
       // brutalist family instead of the original's full pill shape.
-      shimmerColor = "var(--color-chrome-light)",
+      shimmerColor = "#ffffff",
       shimmerSize = "0.05em",
       shimmerSpread = "90deg",
       shimmerDuration = "2.5s",
