@@ -9,7 +9,7 @@ import { SITE_SLOGAN } from '../lib/brand'
 const beliefs = [
   {
     title: 'Zero Barrier',
-    bodyLines: ['손가락을 집고 튕기는 직관적인 제스처', '하나만 누구나 즉시 음악을 조작합니다.'],
+    bodyLines: ['손가락을 집고 튕기는 직관적인 제스처', '하나로 누구나 즉시 음악을 조작합니다.'],
   },
   {
     title: 'Iconic Piece',
